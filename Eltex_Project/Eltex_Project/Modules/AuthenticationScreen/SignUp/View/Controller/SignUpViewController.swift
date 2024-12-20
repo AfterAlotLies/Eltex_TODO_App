@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 final class SignUpViewController: UIViewController {
     
@@ -16,6 +17,7 @@ final class SignUpViewController: UIViewController {
     }()
     
     private let viewModel: SignUpViewModel
+    private var subscriptions: Set<AnyCancellable> = []
     
     init(viewModel: SignUpViewModel) {
         self.viewModel = viewModel
@@ -30,10 +32,22 @@ final class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
+        setupBindings()
     }
 }
 
 private extension SignUpViewController {
+    
+    func setupBindings() {
+        viewModel.$errorMessage
+            .sink { [weak self] errorMessage in
+                guard let self = self else { return }
+                if errorMessage != "" {
+                    self.showAlert(title: "Error", message: errorMessage)
+                }
+            }
+            .store(in: &subscriptions)
+    }
     
     func setupController() {
         view.addSubview(signUpView)
@@ -49,5 +63,12 @@ private extension SignUpViewController {
             signUpView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             signUpView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okAction)
+        present(alert, animated: true)
     }
 }

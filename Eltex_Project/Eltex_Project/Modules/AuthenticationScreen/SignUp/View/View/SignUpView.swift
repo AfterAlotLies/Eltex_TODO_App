@@ -121,8 +121,9 @@ private extension SignUpView {
             return
         }
         
-        // Действия, если проверка пройдена
+        
         print("Email: \(email), Password: \(password)")
+        viewModel.signUpUser(user, email, password)
     }
     
     @objc
