@@ -36,7 +36,8 @@ final class AuthCoordinator: Coordinator {
 extension AuthCoordinator: AuthCoordinatorProtocol {
     
     func showSignIn() {
-        let viewModel = SignInViewModel()
+        let authenticationService = UserAuthenticationService()
+        let viewModel = SignInViewModel(userService: authenticationService)
         
         viewModel.signUpAction
             .sink { [weak self] _ in
@@ -52,7 +53,8 @@ extension AuthCoordinator: AuthCoordinatorProtocol {
     }
     
     func showSignUp() {
-        let viewModel = SignUpViewModel()
+        let authenticationService = UserAuthenticationService()
+        let viewModel = SignUpViewModel(userService: authenticationService)
         
         viewModel.signInAction
             .sink { [weak self] _ in
