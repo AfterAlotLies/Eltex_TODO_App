@@ -65,6 +65,8 @@ final class SignInView: UIView {
         button.layer.borderColor = UIColor.clear.cgColor
         button.layer.cornerRadius = 10
         
+        button.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
+        
         button.backgroundColor = Constants.signInButtonColor
         
         return button
@@ -104,6 +106,20 @@ final class SignInView: UIView {
 }
 
 private extension SignInView {
+    
+    @objc
+    func signInButtonTapped() {
+        guard
+            let email = emailInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !email.isEmpty,
+            let password = passwordInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !password.isEmpty
+        else {
+            print("Email or password is invalid")
+            return
+        }
+        
+        // Действия, если проверка пройдена
+        print("Email: \(email), Password: \(password)")
+    }
     
     @objc
     func signUpHandler() {

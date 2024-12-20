@@ -13,4 +13,8 @@ final class SignUpViewModel {
     func didTapSignIn() {
         signInAction.send()
     }
+    
+    func signUpUser(_ userName: String, _ email: String, _ password: String) {
+        
+    }
 }

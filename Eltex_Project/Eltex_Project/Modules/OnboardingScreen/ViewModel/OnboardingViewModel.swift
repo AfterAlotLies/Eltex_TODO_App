@@ -31,6 +31,7 @@ final class OnboardingViewModel {
     }
     
     func didFinish() {
+        FirstLaunchService.shared.setFirstLaunch()
         isFinished.send()
     }
     

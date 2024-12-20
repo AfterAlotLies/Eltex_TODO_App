@@ -45,7 +45,6 @@ extension OnboardingCoordinator: OnboardingCoordinatorProtocol {
         viewModel.isFinished
             .sink { [weak self] in
                 guard let self = self else { return }
-                print("is Finished")
                 self.coordinatorDidFinished.send()
                 self.subscriptions.removeAll()
             }

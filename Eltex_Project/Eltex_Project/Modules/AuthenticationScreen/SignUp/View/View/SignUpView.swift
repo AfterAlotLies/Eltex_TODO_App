@@ -27,7 +27,7 @@ final class SignUpView: UIView {
         return imageView
     }()
     
-    private lazy var welcomeBackLabel: UILabel = {
+    private lazy var welcomeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Welcome to DO IT"
@@ -56,7 +56,7 @@ final class SignUpView: UIView {
     private lazy var passwordInputTextField: UITextField = createInputTextField(placeholder: "Password",
                                                                                 leftImage: "passwordImage")
     
-    private lazy var signInButton: UIButton = {
+    private lazy var signUpButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -69,6 +69,8 @@ final class SignUpView: UIView {
         button.layer.cornerRadius = 10
         
         button.backgroundColor = Constants.signInButtonColor
+        
+        button.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
         
         return button
     }()
@@ -83,7 +85,7 @@ final class SignUpView: UIView {
         return label
     }()
     
-    private lazy var signUpMessageButton: UIButton = {
+    private lazy var signInMessageButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sign in", for: .normal)
@@ -107,6 +109,21 @@ final class SignUpView: UIView {
 }
 
 private extension SignUpView {
+    
+    @objc
+    func signUpButtonTapped() {
+        guard
+            let user = userInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !user.isEmpty,
+            let email = emailInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !email.isEmpty,
+            let password = passwordInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !password.isEmpty
+        else {
+            print("Email or password is invalid")
+            return
+        }
+        
+        // Действия, если проверка пройдена
+        print("Email: \(email), Password: \(password)")
+    }
     
     @objc
     func signInHandler() {
@@ -138,14 +155,14 @@ private extension SignUpView {
     
     func setupView() {
         addSubview(topImageView)
-        addSubview(welcomeBackLabel)
+        addSubview(welcomeLabel)
         addSubview(titleLabel)
         addSubview(userInputTextField)
         addSubview(emailInputTextField)
         addSubview(passwordInputTextField)
-        addSubview(signInButton)
+        addSubview(signUpButton)
         addSubview(messageLabel)
-        addSubview(signUpMessageButton)
+        addSubview(signInMessageButton)
         
         setupConstraints()
     }
@@ -159,13 +176,13 @@ private extension SignUpView {
         ])
         
         NSLayoutConstraint.activate([
-            welcomeBackLabel.topAnchor.constraint(equalTo: topImageView.bottomAnchor, constant: 16),
-            welcomeBackLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            welcomeBackLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            welcomeLabel.topAnchor.constraint(equalTo: topImageView.bottomAnchor, constant: 16),
+            welcomeLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            welcomeLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
         ])
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: welcomeBackLabel.bottomAnchor, constant: 6),
+            titleLabel.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 6),
             titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
         ])
@@ -192,20 +209,20 @@ private extension SignUpView {
         ])
         
         NSLayoutConstraint.activate([
-            signInButton.topAnchor.constraint(equalTo: passwordInputTextField.bottomAnchor, constant: 36),
-            signInButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            signInButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            signInButton.heightAnchor.constraint(equalToConstant: 42)
+            signUpButton.topAnchor.constraint(equalTo: passwordInputTextField.bottomAnchor, constant: 36),
+            signUpButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            signUpButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            signUpButton.heightAnchor.constraint(equalToConstant: 42)
         ])
         
         NSLayoutConstraint.activate([
             messageLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -20),
-            messageLabel.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 16),
-            messageLabel.trailingAnchor.constraint(equalTo: signUpMessageButton.leadingAnchor, constant: -4)
+            messageLabel.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 16),
+            messageLabel.trailingAnchor.constraint(equalTo: signInMessageButton.leadingAnchor, constant: -4)
         ])
         
         NSLayoutConstraint.activate([
-            signUpMessageButton.centerYAnchor.constraint(equalTo: messageLabel.centerYAnchor),
+            signInMessageButton.centerYAnchor.constraint(equalTo: messageLabel.centerYAnchor),
         ])
     }
 }

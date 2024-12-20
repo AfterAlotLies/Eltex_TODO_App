@@ -14,4 +14,8 @@ final class SignInViewModel {
         signUpAction.send()
     }
     
+    func signInUser() {
+        
+    }
+    
 }
