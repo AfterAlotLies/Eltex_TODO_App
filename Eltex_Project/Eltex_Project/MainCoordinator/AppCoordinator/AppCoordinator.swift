@@ -24,32 +24,26 @@ final class AppCoordinator: Coordinator {
         static let bottomColor: UIColor = UIColor(red: 5.0 / 255.0, green: 36.0 / 255.0, blue: 62.0 / 255.0, alpha: 1)
     }
     
-    
     var childrenCoordinator: [Coordinator] = []
     
     var navigationController: UINavigationController
     
     var type: CoordinatorType { .app }
     
-    private var isFirstTime: Bool = false // ! заглушка - потом поменять на лоигку проверки первого входа !
+    private var isFirstTime: Bool = FirstLaunchService.shared.getIsFirstTimeLaunch()
     private var subscriptions: Set<AnyCancellable> = []
     
     func start() {
         setBackgroundColor()
         if isFirstTime {
-            showAuthScreen()
-        } else {
             showOnBoardingScreen()
+        } else {
+            showAuthScreen()
         }
     }
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
-    }
-    
-    func setBackgroundColor() {
-        guard let rootView = navigationController.view else { return }
-        rootView.applyGradientBackground(colors: [Constants.topColor, Constants.bottomColor])
     }
     
 }
@@ -85,5 +79,13 @@ extension AppCoordinator: AppCoordinatorFinishProtocol {
     
     func coordinatorDidFinish(childCoordinator: Coordinator) {
         childrenCoordinator = childrenCoordinator.filter { $0.type != childCoordinator.type }
+    }
+}
+
+private extension AppCoordinator {
+    
+    func setBackgroundColor() {
+        guard let rootView = navigationController.view else { return }
+        rootView.applyGradientBackground(colors: [Constants.topColor, Constants.bottomColor])
     }
 }
