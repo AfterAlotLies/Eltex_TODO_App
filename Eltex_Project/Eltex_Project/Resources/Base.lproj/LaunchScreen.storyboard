@@ -15,17 +15,31 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="App" translatesAutoresizingMaskIntoConstraints="NO" id="l5v-Gi-qLX">
+                                <rect key="frame" x="-269" y="0.0" width="931" height="852"/>
+                            </imageView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.070588235294117646" green="0.32549019607843138" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" systemColor="systemPinkColor"/>
+                        <constraints>
+                            <constraint firstItem="l5v-Gi-qLX" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="topMargin" constant="-59" id="9Ba-AX-R4g"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="l5v-Gi-qLX" secondAttribute="trailing" constant="-285" id="Kx4-kG-9en"/>
+                            <constraint firstItem="l5v-Gi-qLX" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="MNa-tM-JIY"/>
+                            <constraint firstItem="l5v-Gi-qLX" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="QAz-CE-gy0"/>
+                            <constraint firstItem="l5v-Gi-qLX" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="-285" id="gWA-eY-NpP"/>
+                            <constraint firstItem="l5v-Gi-qLX" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="vm6-6h-uIX"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="53" y="375"/>
+            <point key="canvasLocation" x="52.671755725190835" y="374.64788732394368"/>
         </scene>
     </scenes>
     <resources>
+        <image name="App" width="411" height="731"/>
         <systemColor name="systemPinkColor">
             <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
