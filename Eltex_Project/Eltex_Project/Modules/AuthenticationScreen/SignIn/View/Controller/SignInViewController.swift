@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 
+// MARK: - SignInViewController
 final class SignInViewController: UIViewController {
     
     private lazy var signInView: SignInView = {
@@ -19,6 +20,7 @@ final class SignInViewController: UIViewController {
     private let viewModel: SignInViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(viewModel: SignInViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -36,6 +38,7 @@ final class SignInViewController: UIViewController {
     }
 }
 
+// MARK: - Private methods
 private extension SignInViewController {
     
     func setupBindings() {
@@ -48,6 +51,18 @@ private extension SignInViewController {
             }
             .store(in: &subscriptions)
     }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okAction)
+        present(alert, animated: true)
+    }
+    
+}
+
+// MARK: - Setup Controller + Setup Constraints
+private extension SignInViewController {
     
     func setupController() {
         view.addSubview(signInView)
@@ -64,12 +79,4 @@ private extension SignInViewController {
             signInView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
-        alert.addAction(okAction)
-        present(alert, animated: true)
-    }
-    
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 
+// MARK: - SignInView
 final class SignInView: UIView {
     
     private enum Constants {
@@ -93,6 +94,7 @@ final class SignInView: UIView {
     
     private let viewModel: SignInViewModel
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: SignInViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -105,6 +107,7 @@ final class SignInView: UIView {
     }
 }
 
+// MARK: - Private methods
 private extension SignInView {
     
     @objc
@@ -113,12 +116,9 @@ private extension SignInView {
             let email = emailInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !email.isEmpty,
             let password = passwordInputTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !password.isEmpty
         else {
-            print("Email or password is invalid")
             return
         }
         
-        
-        print("Email: \(email), Password: \(password)")
         viewModel.signInUser(email: email, password: password)
     }
     
@@ -149,6 +149,11 @@ private extension SignInView {
         
         return textField
     }
+    
+}
+
+// MARK: - Setup View + Setup Constraints
+private extension SignInView {
     
     func setupView() {
         addSubview(topImageView)

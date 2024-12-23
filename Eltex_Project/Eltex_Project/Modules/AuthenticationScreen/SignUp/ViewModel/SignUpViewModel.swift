@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class SignUpViewModel {
     
@@ -13,16 +14,17 @@ final class SignUpViewModel {
     
     private let userService: RegistrationProtocol
     private var subscriptions: Set<AnyCancellable> = []
+    private var cancellables: AnyCancellable?
     
-    let signInAction = PassthroughSubject<Void, Never>()
+    let showSignInScreenAction = PassthroughSubject<Void, Never>()
+    let signUpSucceededAction = PassthroughSubject<UserInfo, Never>()
     
     init(userService: RegistrationProtocol) {
         self.userService = userService
-        setupBindings()
     }
     
     func didTapSignIn() {
-        signInAction.send()
+        showSignInScreenAction.send()
     }
     
     func signUpUser(_ userName: String, _ email: String, _ password: String) {
@@ -41,28 +43,26 @@ final class SignUpViewModel {
             return
         }
         
-        userService.addUserToDataBase(userName: userName, userEmail: email, userPassword: password)
-    }
-    
-}
-
-private extension SignUpViewModel {
-    
-    func setupBindings() {
-        userService.addUserStatePublisher
-            .sink { [weak self] state in
+        cancellables = userService.addUserToDataBase(userName: userName, userEmail: email, userPassword: password)
+            .sink(receiveCompletion: { [weak self] result in
                 guard let self = self else { return }
-                switch state {
-                case .success:
-                    print("User added successfully move to main screen")
-                case .userAlreadyExists:
-                    self.errorMessage = "User already exists"
-                case .failure:
-                    self.errorMessage = "Something went wrong"
-                case .none:
-                    break
+                switch result {
+                case .finished:
+                    print()
+                case .failure(let error):
+                    if let error = error as? UserRegistrationResult {
+                        switch error {
+                        case .userAlreadyExists:
+                            self.errorMessage = "User already exists"
+                        }
+                    } else {
+                        self.errorMessage = error.localizedDescription
+                    }
                 }
-            }
-            .store(in: &subscriptions)
+            }, receiveValue: { [weak self] userInfo in
+                guard let self = self else { return }
+                self.signUpSucceededAction.send(userInfo)
+            })
     }
+    
 }

@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class SignInViewModel {
     
@@ -14,7 +15,8 @@ final class SignInViewModel {
     private let userService: LoginProtocol
     private var cancellable: AnyCancellable?
     
-    let signUpAction = PassthroughSubject<Void, Never>()
+    let showSignUpScreenAction = PassthroughSubject<Void, Never>()
+    let signInSucceededAction = PassthroughSubject<UserInfo, Never>()
 
     
     init(userService: LoginProtocol) {
@@ -22,7 +24,7 @@ final class SignInViewModel {
     }
     
     func didTapSignUp() {
-        signUpAction.send()
+        showSignUpScreenAction.send()
     }
     
     func signInUser(email: String, password: String) {
@@ -31,7 +33,7 @@ final class SignInViewModel {
                 guard let self = self else { return }
                 switch result {
                 case .finished:
-                    print("successed")
+                    print()
                 case .failure(let error):
                     if let error = error as? UserAuthorizationResult {
                         switch error {
@@ -44,10 +46,10 @@ final class SignInViewModel {
                         self.errorMessage = error.localizedDescription
                     }
                 }
-            } receiveValue: { (email, name, id) in
-                print("email: \(email), name: \(name), id: \(id)")
+            } receiveValue: { [weak self] userInfo in
+                guard let self = self else { return }
+                self.signInSucceededAction.send(userInfo)
             }
-
     }
     
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 
+// MARK: - SignUpView
 final class SignUpView: UIView {
     
     private enum Constants {
@@ -96,6 +97,7 @@ final class SignUpView: UIView {
     
     private let viewModel: SignUpViewModel
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: SignUpViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -108,6 +110,7 @@ final class SignUpView: UIView {
     }
 }
 
+// MARK: - Private methods
 private extension SignUpView {
     
     @objc
@@ -121,8 +124,6 @@ private extension SignUpView {
             return
         }
         
-        
-        print("Email: \(email), Password: \(password)")
         viewModel.signUpUser(user, email, password)
     }
     
@@ -153,6 +154,10 @@ private extension SignUpView {
         
         return textField
     }
+}
+
+// MARK: - Setup View + Setup Constraints
+private extension SignUpView {
     
     func setupView() {
         addSubview(topImageView)

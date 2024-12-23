@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 
+// MARK: - SignUpViewController
 final class SignUpViewController: UIViewController {
     
     private lazy var signUpView: SignUpView = {
@@ -19,6 +20,7 @@ final class SignUpViewController: UIViewController {
     private let viewModel: SignUpViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(viewModel: SignUpViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -36,6 +38,7 @@ final class SignUpViewController: UIViewController {
     }
 }
 
+// MARK: - Private methods
 private extension SignUpViewController {
     
     func setupBindings() {
@@ -48,6 +51,17 @@ private extension SignUpViewController {
             }
             .store(in: &subscriptions)
     }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okAction)
+        present(alert, animated: true)
+    }
+}
+
+// MARK: - Setup Controller + Setup Constraints
+private extension SignUpViewController {
     
     func setupController() {
         view.addSubview(signUpView)
@@ -63,12 +77,5 @@ private extension SignUpViewController {
             signUpView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             signUpView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-    }
-    
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
-        alert.addAction(okAction)
-        present(alert, animated: true)
     }
 }
