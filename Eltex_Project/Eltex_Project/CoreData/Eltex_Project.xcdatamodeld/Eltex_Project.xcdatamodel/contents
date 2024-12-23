@@ -11,6 +11,7 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descriptionNote" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isCompleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="task" optional="YES" attributeType="String"/>
         <attribute name="time" optional="YES" attributeType="String"/>
         <relationship name="ofUserEntity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserEntity" inverseName="ofNotesEntity" inverseEntity="UserEntity"/>
