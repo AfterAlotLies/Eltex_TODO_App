@@ -22,14 +22,17 @@ final class OnboardingCoordinator: Coordinator {
     var navigationController: UINavigationController
     var type: CoordinatorType { .onboarding }
     
+    private let firstLaunchService: FirstLaunchService
+    
     let coordinatorDidFinished = PassthroughSubject<Void, Never>()
     
     func start() {
         showOnboarding()
     }
     
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, firstLaunchService: FirstLaunchService) {
         self.navigationController = navigationController
+        self.firstLaunchService = firstLaunchService
         print("inited OnboardingCoordinator")
     }
     
@@ -43,7 +46,7 @@ final class OnboardingCoordinator: Coordinator {
 extension OnboardingCoordinator: OnboardingCoordinatorProtocol {
     
     func showOnboarding() {
-        let viewModel = OnboardingViewModel()
+        let viewModel = OnboardingViewModel(firstLaunchService: firstLaunchService)
         
         viewModel.isFinished
             .sink { [weak self] in

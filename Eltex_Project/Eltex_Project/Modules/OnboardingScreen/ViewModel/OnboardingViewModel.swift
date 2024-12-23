@@ -14,9 +14,11 @@ final class OnboardingViewModel {
     @Published private(set) var paginationScrollProgreess: CGFloat = 0
     @Published private(set) var paginationButtonHandlerProgress: CGFloat = 0
     
+    private let firstLaunchService: FirstLaunchService
     let isFinished = PassthroughSubject<Void, Never>()
     
-    init() {
+    init(firstLaunchService: FirstLaunchService) {
+        self.firstLaunchService = firstLaunchService
         setPageData()
     }
     
@@ -31,7 +33,7 @@ final class OnboardingViewModel {
     }
     
     func didFinish() {
-        FirstLaunchService.shared.setFirstLaunch()
+        firstLaunchService.setFirstLaunch()
         isFinished.send()
     }
     
