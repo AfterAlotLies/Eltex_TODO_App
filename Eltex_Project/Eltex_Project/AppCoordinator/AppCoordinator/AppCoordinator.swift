@@ -29,17 +29,21 @@ final class AppCoordinator: Coordinator {
     
     var type: CoordinatorType { .app }
     
-    private var isFirstTime: Bool = FirstLaunchService.shared.getIsFirstTimeLaunch()
-    private var isUserAuthenticated: Bool = false // Заглушка - построить сервис
+    private var firstLaunchService: FirstLaunchService?
+    
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Start
     func start() {
+        firstLaunchService = FirstLaunchService()
         setBackgroundColor()
-        if isFirstTime {
+        if firstLaunchService?.getIsFirstTimeLaunch() == true {
             showOnBoardingScreen()
         } else {
-            if isUserAuthenticated {
-                setupTabBarCoordinator(<#T##userInfo: UserInfo##UserInfo#>)
+            firstLaunchService = nil
+            if let userInfo = UserCacheService.shared.getUser() {
+                print(userInfo)
+                setupTabBarCoordinator(userInfo)
             } else {
                 showAuthScreen()
             }
@@ -56,7 +60,8 @@ final class AppCoordinator: Coordinator {
 extension AppCoordinator: AppCoordinatorProtocol {
     
     func showOnBoardingScreen() {
-        let onboardingCoordinator = OnboardingCoordinator(navigationController: navigationController)
+        guard let service = firstLaunchService else { return }
+        let onboardingCoordinator = OnboardingCoordinator(navigationController: navigationController, firstLaunchService: service)
         
         onboardingCoordinator.coordinatorDidFinished
                 .sink { [weak self, weak onboardingCoordinator] in
@@ -70,7 +75,6 @@ extension AppCoordinator: AppCoordinatorProtocol {
         onboardingCoordinator.start()
     }
     
-    
     func showAuthScreen() {
         let authCoordinator = AuthCoordinator(navigationController: navigationController)
         
@@ -78,6 +82,7 @@ extension AppCoordinator: AppCoordinatorProtocol {
             .sink { [weak self, weak authCoordinator] userInfo in
                 guard let self = self, let authCoordinator = authCoordinator else { return }
                 self.coordinatorDidFinish(childCoordinator: authCoordinator)
+                UserCacheService.shared.saveUser(userInfo)
                 self.setupTabBarCoordinator(userInfo)
             }
             .store(in: &subscriptions)

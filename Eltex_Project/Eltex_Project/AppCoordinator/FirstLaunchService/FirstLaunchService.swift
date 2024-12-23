@@ -8,9 +8,6 @@
 import Foundation
 
 final class FirstLaunchService {
-    static let shared = FirstLaunchService()
-    
-    private init() {}
     
     private var isFirstTimeLaunch: Bool {
         if UserDefaults.standard.object(forKey: "firstLaunch") == nil {
@@ -27,4 +24,5 @@ final class FirstLaunchService {
     func getIsFirstTimeLaunch() -> Bool {
         return isFirstTimeLaunch
     }
+    
 }
