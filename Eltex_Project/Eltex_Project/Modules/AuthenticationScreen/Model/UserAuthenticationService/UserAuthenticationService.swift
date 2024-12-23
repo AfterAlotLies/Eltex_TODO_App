@@ -6,34 +6,20 @@
 //
 
 import CoreData
-import Foundation
 import Combine
 
-enum UserRegistrationResult {
-    case success
+// MARK: - Error Enums
+enum UserRegistrationResult: Error {
     case userAlreadyExists
-    case failure
-    case none
 }
 
 enum UserAuthorizationResult: Error {
     case invalidPassword 
     case invalidUser
-    
-    var description: String? {
-        switch self {
-        case .invalidPassword: 
-            return "Invalid password"
-        case .invalidUser: 
-            return "Invalid user"
-        }
-    }
 }
 
 // MARK: - UserAuthenticationService class
 final class UserAuthenticationService {
-    
-    @Published private var registrationUserResult: UserRegistrationResult = .none
     
     private let entityName: String = "UserEntity"
     
@@ -82,46 +68,46 @@ final class UserAuthenticationService {
 // MARK: - UserAuthenticationService + RegistrationProtocol
 extension UserAuthenticationService: RegistrationProtocol {
     
-    var addUserStatePublisher: Published<UserRegistrationResult>.Publisher {
-        $registrationUserResult
-    }
-    
-    func addUserToDataBase(userName: String, userEmail: String, userPassword: String) {
+    func addUserToDataBase(userName: String, userEmail: String, userPassword: String) -> AnyPublisher<UserInfo, Error> {
         let context = persistentContainer.viewContext
         
         let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "email == %@", userEmail)
         
-        do {
-            let existingUsers = try context.fetch(fetchRequest)
-            
-            if !existingUsers.isEmpty {
-                print("User with this email already exists")
-                registrationUserResult = .userAlreadyExists
-                return
-            }
-        } catch {
-            print("Failed to check for existing user: \(error)")
-            registrationUserResult = .failure
-            return
-        }
-        
-        let userEntity = UserEntity(context: context)
-        userEntity.id = UUID()
-        userEntity.name = userName
-        userEntity.email = userEmail
-        userEntity.password = userPassword
-        
-        if context.hasChanges {
+        return Future<UserInfo, Error> { promise in
             do {
-                try context.save()
-                print("saved success")
-                registrationUserResult = .success
+                let existingUsers = try context.fetch(fetchRequest)
+                
+                if let _ = existingUsers.first {
+                    print("User with this email already exists")
+                    promise(.failure(UserRegistrationResult.userAlreadyExists))
+                    return
+                }
+                
+                let userEntity = UserEntity(context: context)
+                userEntity.id = UUID()
+                userEntity.name = userName
+                userEntity.email = userEmail
+                userEntity.password = userPassword
+                
+                if context.hasChanges {
+                    do {
+                        try context.save()
+                        print("User saved successfully")
+                        promise(.success(UserInfo(name: userEntity.name ?? "No name",
+                                                  email: userEntity.email ?? "No email",
+                                                  id: userEntity.id)))
+                    } catch {
+                        print("Failed to save user: \(error)")
+                        promise(.failure(error))
+                    }
+                }
             } catch {
-                print("failed to save: \(error)")
-                registrationUserResult = .failure
+                print("Failed to check for existing user: \(error)")
+                promise(.failure(error))
             }
         }
+        .eraseToAnyPublisher()
     }
     
 }
@@ -129,19 +115,21 @@ extension UserAuthenticationService: RegistrationProtocol {
 // MARK: - UserAuthenticationService + LoginProtocol
 extension UserAuthenticationService: LoginProtocol {
     
-    func authenticateUser(email: String, password: String) -> AnyPublisher<(String, String, UUID?), Error> {
+    func authenticateUser(email: String, password: String) -> AnyPublisher<UserInfo, Error> {
         let context = persistentContainer.viewContext
         
         let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "email == %@", email)
         
-        return Future<(String, String, UUID?), Error> { promise in
+        return Future<UserInfo, Error> { promise in
             do {
                 let users = try context.fetch(fetchRequest)
                 
                 if let user = users.first {
                     if user.password == password {
-                        promise(.success((user.email ?? "No email", user.name ?? "No name", user.id)))
+                        promise(.success(UserInfo(name: user.name ?? "No name",
+                                                  email: user.email ?? "No email",
+                                                  id: user.id)))
                     } else {
                         print("invalid password")
                         promise(.failure(UserAuthorizationResult.invalidPassword))

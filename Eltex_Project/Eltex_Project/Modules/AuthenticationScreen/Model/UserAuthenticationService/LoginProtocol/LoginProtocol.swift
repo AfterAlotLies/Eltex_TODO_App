@@ -9,5 +9,5 @@ import Combine
 import Foundation
 
 protocol LoginProtocol {
-    func authenticateUser(email: String, password: String) -> AnyPublisher<(String, String, UUID?), Error>
+    func authenticateUser(email: String, password: String) -> AnyPublisher<UserInfo, Error>
 }

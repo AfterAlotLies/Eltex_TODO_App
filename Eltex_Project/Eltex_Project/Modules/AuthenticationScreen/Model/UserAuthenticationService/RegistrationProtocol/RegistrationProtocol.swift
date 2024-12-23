@@ -6,10 +6,10 @@
 //
 
 import Combine
+import Foundation
 
 protocol RegistrationProtocol {
-    var addUserStatePublisher: Published<UserRegistrationResult>.Publisher { get }
-    func addUserToDataBase(userName: String, userEmail: String, userPassword: String)
+    func addUserToDataBase(userName: String, userEmail: String, userPassword: String) -> AnyPublisher<UserInfo, Error>
+    func deleteAllUsers()
     func fetchAllUsers()
-    func deleteAllUsers() 
 }

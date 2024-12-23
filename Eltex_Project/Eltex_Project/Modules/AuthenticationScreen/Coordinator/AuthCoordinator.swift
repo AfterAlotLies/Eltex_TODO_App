@@ -8,14 +8,18 @@
 import UIKit
 import Combine
 
+// MARK: - AuthCoordinatorProtocol
 protocol AuthCoordinatorProtocol {
     func showSignIn()
     func showSignUp()
 }
 
+// MARK: - AuthCoordinator + Coordinator
 final class AuthCoordinator: Coordinator {
     
     private var subscriptions: Set<AnyCancellable> = []
+    
+    let coordinatorDidFinished = PassthroughSubject<UserInfo, Never>()
     
     var childrenCoordinator: [Coordinator] = []
     
@@ -33,18 +37,27 @@ final class AuthCoordinator: Coordinator {
     
 }
 
+// MARK: - AuthCoordinator + AuthCoordinatorProtocol
 extension AuthCoordinator: AuthCoordinatorProtocol {
     
     func showSignIn() {
         let authenticationService = UserAuthenticationService()
         let viewModel = SignInViewModel(userService: authenticationService)
         
-        viewModel.signUpAction
+        viewModel.showSignUpScreenAction
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.showSignUp()
             }
             .store(in: &subscriptions)
+        
+        viewModel.signInSucceededAction
+            .sink { [weak self] userInfo in
+                guard let self = self else { return }
+                self.coordinatorDidFinished.send(userInfo)
+            }
+            .store(in: &subscriptions)
+        
         
         let viewController = SignInViewController(viewModel: viewModel)
         UIView.transition(with: navigationController.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
@@ -56,10 +69,17 @@ extension AuthCoordinator: AuthCoordinatorProtocol {
         let authenticationService = UserAuthenticationService()
         let viewModel = SignUpViewModel(userService: authenticationService)
         
-        viewModel.signInAction
+        viewModel.showSignInScreenAction
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.showSignIn()
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.signUpSucceededAction
+            .sink { [weak self] userInfo in
+                guard let self = self else { return }
+                self.coordinatorDidFinished.send(userInfo)
             }
             .store(in: &subscriptions)
         
