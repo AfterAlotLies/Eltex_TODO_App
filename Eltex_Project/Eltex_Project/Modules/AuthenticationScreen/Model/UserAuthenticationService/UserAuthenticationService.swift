@@ -131,11 +131,9 @@ extension UserAuthenticationService: LoginProtocol {
                                                   email: user.email ?? "No email",
                                                   id: user.id)))
                     } else {
-                        print("invalid password")
                         promise(.failure(UserAuthorizationResult.invalidPassword))
                     }
                 } else {
-                    print("invalid user")
                     promise(.failure(UserAuthorizationResult.invalidUser))
                 }
             } catch {
