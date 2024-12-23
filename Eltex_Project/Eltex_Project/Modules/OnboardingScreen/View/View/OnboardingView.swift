@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 
+// MARK: - OnboardingView
 final class OnboardingView: UIView {
     
     private lazy var collectionView: UICollectionView = {
@@ -54,6 +55,7 @@ final class OnboardingView: UIView {
     private var paginationModel: [Page]?
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: OnboardingViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -76,6 +78,7 @@ final class OnboardingView: UIView {
     }
 }
 
+// MARK: - OnboardingView + UICollectionViewDataSource
 extension OnboardingView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -99,6 +102,7 @@ extension OnboardingView: UICollectionViewDataSource {
     }
 }
 
+// MARK: - OnboardingView + UICollectionViewDelegate
 extension OnboardingView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -111,22 +115,26 @@ extension OnboardingView: UICollectionViewDelegate {
     }
 }
 
+// MARK: - OnboardingView + UIScrollViewDelegate Method
 extension OnboardingView {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let pageWidth = scrollView.bounds.width
         let contentOffsetX = scrollView.contentOffset.x
-        viewModel.didChangePaginationScrollProgress(for: pageWidth, with: contentOffsetX)
+        viewModel.didChangePaginationScrollProgress(for: pageWidth,
+                                                    with: contentOffsetX)
     }
 }
 
+// MARK: - OnboardingView + UICollectionViewDelegateFlowLayout
 extension OnboardingView: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.frame.width , height: self.frame.height / 1.5)
+        return CGSize(width: self.frame.width, height: self.frame.height / 1.5)
     }
 }
 
+// MARK: - Private methods
 private extension OnboardingView {
     
     @objc
@@ -135,7 +143,8 @@ private extension OnboardingView {
         if snakePageControl.currentPage == model.count - 1 {
             viewModel.didFinish()
         }
-        viewModel.didChangePaginationButtonHandlerProgress(for: snakePageControl.pageCount, with: snakePageControl.progress)
+        viewModel.didChangePaginationButtonHandlerProgress(for: snakePageControl.pageCount,
+                                                           with: snakePageControl.progress)
     }
     
     func setupBindings() {
@@ -152,7 +161,9 @@ private extension OnboardingView {
                 snakePageControl.progress = progress
                 if progress > 0 {
                     let indexPath = IndexPath(item: Int(progress), section: 0)
-                    self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+                    self.collectionView.scrollToItem(at: indexPath,
+                                                     at: .centeredHorizontally,
+                                                     animated: true)
                 }
             }
             .store(in: &subscriptions)
@@ -166,6 +177,10 @@ private extension OnboardingView {
         collectionViewLayout.scrollDirection = .horizontal
         return collectionViewLayout
     }
+}
+
+// MARK: - Setup View + Setup Constraints
+private extension OnboardingView {
     
     func setupView() {
         addSubview(collectionView)
@@ -200,4 +215,3 @@ private extension OnboardingView {
         ])
     }
 }
-

@@ -8,10 +8,12 @@
 import UIKit
 import Combine
 
+// MARK: - OnboardingCoordinatorProtocol
 protocol OnboardingCoordinatorProtocol {
     func showOnboarding()
 }
 
+// MARK: - OnboardingCoordinator + Coordinator
 final class OnboardingCoordinator: Coordinator {
     
     private var subscriptions: Set<AnyCancellable> = []
@@ -37,6 +39,7 @@ final class OnboardingCoordinator: Coordinator {
     
 }
 
+// MARK: - OnboardingCoordinator + OnboardingCoordinatorProtocol
 extension OnboardingCoordinator: OnboardingCoordinatorProtocol {
     
     func showOnboarding() {

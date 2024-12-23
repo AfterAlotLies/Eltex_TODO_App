@@ -7,6 +7,7 @@
 
 import UIKit
 
+// MARK: - OnboardingCollectionViewCell
 final class OnboardingCollectionViewCell: UICollectionViewCell {
     
     static let identifier: String = String(describing: OnboardingCollectionViewCell.self)
@@ -27,6 +28,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    // MARK: - Lifecycle
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
@@ -50,6 +52,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell {
     
 }
 
+// MARK: - Setup Cell + Setup Constraints
 private extension OnboardingCollectionViewCell {
     
     func setupCell() {

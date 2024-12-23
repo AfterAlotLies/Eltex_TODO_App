@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 
+// MARK: - OnboardingViewController
 final class OnboardingViewController: UIViewController {
     
     private lazy var onboardingView: OnboardingView = {
@@ -19,6 +20,7 @@ final class OnboardingViewController: UIViewController {
     private let viewModel: OnboardingViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
@@ -40,6 +42,7 @@ final class OnboardingViewController: UIViewController {
     }
 }
 
+// MARK: - Private methods
 private extension OnboardingViewController {
     
     func setupBindings() {
@@ -52,6 +55,10 @@ private extension OnboardingViewController {
             }
             .store(in: &subscriptions)
     }
+}
+
+// MARK: - Setup Controller + Setup Constraints
+private extension OnboardingViewController {
     
     func setupController() {
         view.backgroundColor = .clear

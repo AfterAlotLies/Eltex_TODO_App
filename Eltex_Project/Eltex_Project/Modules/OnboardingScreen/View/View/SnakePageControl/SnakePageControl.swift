@@ -27,7 +27,6 @@ class SnakePageControl: UIView {
     
     
     // MARK: - Appearance
-    
     var activeTint: UIColor = .white {
         didSet {
             activeLayer.backgroundColor = activeTint.cgColor
@@ -87,9 +86,7 @@ class SnakePageControl: UIView {
         self.invalidateIntrinsicContentSize()
     }
     
-    
-    // MARK: - Layout
-    
+// MARK: - Layout
     fileprivate func layoutActivePageIndicator(_ progress: CGFloat) {
         guard progress >= 0 && progress <= CGFloat(pageCount - 1) else { return }
         let denormalizedProgress = progress * (indicatorDiameter + indicatorPadding)
