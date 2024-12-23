@@ -7,6 +7,7 @@
 
 import UIKit
 
+// MARK: - TabBarPages
 enum TabBarPages: CaseIterable {
     case home
     case notesList
@@ -27,19 +28,22 @@ enum TabBarPages: CaseIterable {
     }
 }
 
+// MARK: - MainAppTabBarCoordinatorProtocol
 protocol MainAppTabBarCoordinatorProtocol {
     func setupScreenCoordinator(_ page: TabBarPages) -> UINavigationController
 }
 
+// MARK: - MainAppTabBarCoordinator + Coordinator
 final class MainAppTabBarCoordinator: Coordinator {
     
     var type: CoordinatorType { .tabbar }
     
     var childrenCoordinator: [Coordinator] = []
     var navigationController: UINavigationController
-    var tabBarController: UITabBarController
     
-    var userInfo: UserInfo
+    private var tabBarController: UITabBarController
+    private let userInfo: UserInfo
+    private let notesRepository = NotesRepository()
     
     init(navigationController: UINavigationController, userInfo: UserInfo) {
         self.navigationController = navigationController
@@ -47,45 +51,29 @@ final class MainAppTabBarCoordinator: Coordinator {
         self.tabBarController = UITabBarController()
     }
     
+    // MARK: - Start
     func start() {
         print("tab bar started")
         let pages: [TabBarPages] = TabBarPages.allCases
+        
         let viewController = pages.map { setupScreenCoordinator($0) }
         
         tabBarController.viewControllers = viewController
         tabBarController.selectedIndex = 0
-
-        navigationController.setViewControllers([tabBarController], animated: false)
+        tabBarController.view.backgroundColor = .clear
+        tabBarController.tabBar.isTranslucent = false
+        
+        navigationController.setViewControllers([tabBarController], animated: true)
     }
 }
 
+// MARK: - MainAppTabBarCoordinator + MainAppTabBarCoordinatorProtocol
 extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
     
     func setupScreenCoordinator(_ page: TabBarPages) -> UINavigationController {
         let childNavigationController = UINavigationController()
         childNavigationController.isNavigationBarHidden = true
-        
-        switch page {
-        case .home:
-            let homeCoordinator = HomeCoordinator(navigationController: childNavigationController, userInfo: userInfo)
-            childrenCoordinator.append(homeCoordinator)
-            homeCoordinator.start()
-            
-        case .notesList:
-            let notesListCoordinator = NotesListCoordinator(navigationController: childNavigationController)
-            childrenCoordinator.append(notesListCoordinator)
-            notesListCoordinator.start()
-            
-        case .calendar:
-            let calendarCoordinator = CalendarCoordinator(navigationController: childNavigationController)
-            childrenCoordinator.append(calendarCoordinator)
-            calendarCoordinator.start()
-            
-        case .settings:
-            let settingsCoordinator = SettingsCoordinator(navigationController: childNavigationController)
-            childrenCoordinator.append(settingsCoordinator)
-            settingsCoordinator.start()
-        }
+        childNavigationController.view.applyGradientBackground(colors: [AppBackgroundColors.topColor, AppBackgroundColors.bottomColor])
         
         childNavigationController.tabBarItem = UITabBarItem(
             title: "",
@@ -93,6 +81,32 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
             selectedImage: page.itemIcon
         )
         
-        return childNavigationController
+        switch page {
+        case .home:
+            let homeCoordinator = HomeCoordinator(navigationController: childNavigationController,
+                                                  userInfo: userInfo,
+                                                  notesRepository: notesRepository)
+            childrenCoordinator.append(homeCoordinator)
+            homeCoordinator.start()
+            return homeCoordinator.navigationController
+            
+        case .notesList:
+            let notesListCoordinator = NotesListCoordinator(navigationController: childNavigationController)
+            childrenCoordinator.append(notesListCoordinator)
+            notesListCoordinator.start()
+            return notesListCoordinator.navigationController
+            
+        case .calendar:
+            let calendarCoordinator = CalendarCoordinator(navigationController: childNavigationController)
+            childrenCoordinator.append(calendarCoordinator)
+            calendarCoordinator.start()
+            return calendarCoordinator.navigationController
+            
+        case .settings:
+            let settingsCoordinator = SettingsCoordinator(navigationController: childNavigationController)
+            childrenCoordinator.append(settingsCoordinator)
+            settingsCoordinator.start()
+            return settingsCoordinator.navigationController
+        }
     }
 }
