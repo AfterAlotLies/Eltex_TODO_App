@@ -8,21 +8,20 @@
 import UIKit
 import Combine
 
+// MARK: - AppCoordinatorProtocol
 protocol AppCoordinatorProtocol {
     func showOnBoardingScreen()
     func showAuthScreen()
+    func setupTabBarCoordinator(_ userInfo: UserInfo)
 }
 
+// MARK: - AppCoordinatorFinishProtocol
 protocol AppCoordinatorFinishProtocol {
     func coordinatorDidFinish(childCoordinator: Coordinator)
 }
 
+// MARK: - AppCoordinator + Coordinator
 final class AppCoordinator: Coordinator {
-    
-    private enum Constants {
-        static let topColor: UIColor = UIColor(red: 18.0 / 255.0, green: 83.0 / 255.0, blue: 170.0 / 255.0, alpha: 1)
-        static let bottomColor: UIColor = UIColor(red: 5.0 / 255.0, green: 36.0 / 255.0, blue: 62.0 / 255.0, alpha: 1)
-    }
     
     var childrenCoordinator: [Coordinator] = []
     
@@ -31,6 +30,7 @@ final class AppCoordinator: Coordinator {
     var type: CoordinatorType { .app }
     
     private var isFirstTime: Bool = FirstLaunchService.shared.getIsFirstTimeLaunch()
+    private var isUserAuthenticated: Bool = false // Заглушка - построить сервис
     private var subscriptions: Set<AnyCancellable> = []
     
     func start() {
@@ -38,7 +38,11 @@ final class AppCoordinator: Coordinator {
         if isFirstTime {
             showOnBoardingScreen()
         } else {
-            showAuthScreen()
+            if isUserAuthenticated {
+                setupTabBarCoordinator(<#T##userInfo: UserInfo##UserInfo#>)
+            } else {
+                showAuthScreen()
+            }
         }
     }
     
@@ -48,6 +52,7 @@ final class AppCoordinator: Coordinator {
     
 }
 
+// MARK: - AppCoordinator + AppCoordinatorProtocol
 extension AppCoordinator: AppCoordinatorProtocol {
     
     func showOnBoardingScreen() {
@@ -67,14 +72,30 @@ extension AppCoordinator: AppCoordinatorProtocol {
     
     
     func showAuthScreen() {
-        let authCoordinator: Coordinator = AuthCoordinator(navigationController: navigationController)
+        let authCoordinator = AuthCoordinator(navigationController: navigationController)
+        
+        authCoordinator.coordinatorDidFinished
+            .sink { [weak self, weak authCoordinator] userInfo in
+                guard let self = self, let authCoordinator = authCoordinator else { return }
+                self.coordinatorDidFinish(childCoordinator: authCoordinator)
+                self.setupTabBarCoordinator(userInfo)
+            }
+            .store(in: &subscriptions)
         
         childrenCoordinator.append(authCoordinator)
         navigationController.setViewControllers([], animated: false)
         authCoordinator.start()
     }
+    
+    func setupTabBarCoordinator(_ userInfo: UserInfo) {
+        let coordinator = MainAppTabBarCoordinator(navigationController: navigationController, userInfo: userInfo)
+        childrenCoordinator.append(coordinator)
+        navigationController.setViewControllers([], animated: false)
+        coordinator.start()
+    }
 }
 
+// MARK: - AppCoordinator + AppCoordinatorFinishProtocol
 extension AppCoordinator: AppCoordinatorFinishProtocol {
     
     func coordinatorDidFinish(childCoordinator: Coordinator) {
@@ -82,10 +103,11 @@ extension AppCoordinator: AppCoordinatorFinishProtocol {
     }
 }
 
+// MARK: - AppCoordinator + Private methods
 private extension AppCoordinator {
     
     func setBackgroundColor() {
         guard let rootView = navigationController.view else { return }
-        rootView.applyGradientBackground(colors: [Constants.topColor, Constants.bottomColor])
+        rootView.applyGradientBackground(colors: [AppBackgroundColors.topColor, AppBackgroundColors.bottomColor])
     }
 }

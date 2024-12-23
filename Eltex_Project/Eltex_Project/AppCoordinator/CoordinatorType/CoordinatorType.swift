@@ -9,5 +9,9 @@ enum CoordinatorType {
     case app
     case onboarding
     case authentication
-    case mainApp
+    case tabbar
+    case home
+    case notes
+    case calendar
+    case settings
 }
