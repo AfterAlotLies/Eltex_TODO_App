@@ -2,7 +2,7 @@
 //  UserEntity+CoreDataProperties.swift
 //  Eltex_Project
 //
-//  Created by Vyacheslav Gusev on 20.12.2024.
+//  Created by Vyacheslav Gusev on 24.12.2024.
 //
 //
 
@@ -16,10 +16,10 @@ extension UserEntity {
         return NSFetchRequest<UserEntity>(entityName: "UserEntity")
     }
 
-    @NSManaged public var id: UUID?
-    @NSManaged public var name: String?
-    @NSManaged public var email: String?
-    @NSManaged public var password: String?
+    @NSManaged public var email: String
+    @NSManaged public var id: UUID
+    @NSManaged public var name: String
+    @NSManaged public var password: String
     @NSManaged public var ofNotesEntity: NSSet?
 
 }
