@@ -42,7 +42,6 @@ final class AppCoordinator: Coordinator {
         } else {
             firstLaunchService = nil
             if let userInfo = UserCacheService.shared.getUser() {
-                print(userInfo)
                 setupTabBarCoordinator(userInfo)
             } else {
                 showAuthScreen()
@@ -94,6 +93,17 @@ extension AppCoordinator: AppCoordinatorProtocol {
     
     func setupTabBarCoordinator(_ userInfo: UserInfo) {
         let coordinator = MainAppTabBarCoordinator(navigationController: navigationController, userInfo: userInfo)
+        
+        coordinator.coordinatorDidFinish
+            .sink { [weak self, weak coordinator] _ in
+                guard let self = self,
+                      let coordinator = coordinator else { return }
+                UserCacheService.shared.clearUser()
+                self.coordinatorDidFinish(childCoordinator: coordinator)
+                self.showAuthScreen()
+            }
+            .store(in: &subscriptions)
+        
         childrenCoordinator.append(coordinator)
         navigationController.setViewControllers([], animated: false)
         coordinator.start()
