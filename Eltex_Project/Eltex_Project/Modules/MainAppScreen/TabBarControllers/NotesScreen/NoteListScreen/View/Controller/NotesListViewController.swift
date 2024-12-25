@@ -17,10 +17,12 @@ final class NotesListViewController: UIViewController {
     }()
     
     private let viewModel: NoteListViewModel
+    private var subscriptions: Set<AnyCancellable> = []
     
     init(viewModel: NoteListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        setupBindings()
     }
     
     @available(*, unavailable)
@@ -35,6 +37,15 @@ final class NotesListViewController: UIViewController {
 }
 
 private extension NotesListViewController {
+    
+    func setupBindings() {
+        viewModel.$unCompletedNotes
+            .sink { [weak self] notes in
+                guard let self = self else { return }
+                self.notesListView.setNoteModel(notes)
+            }
+            .store(in: &subscriptions)
+    }
     
     func setupController() {
         view.addSubview(notesListView)

@@ -55,6 +55,7 @@ final class NotesListView: UIView {
         tableView.backgroundColor = .clear
         tableView.dataSource = self
         tableView.delegate  = self
+        tableView.showsVerticalScrollIndicator = false
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: NotesTableViewCell.identifier)
         return tableView
     }()
@@ -70,6 +71,7 @@ final class NotesListView: UIView {
     }()
     
     private let viewModel: NoteListViewModel
+    private var noteModel: [Note]?
     
     init(frame: CGRect, viewModel: NoteListViewModel) {
         self.viewModel = viewModel
@@ -85,22 +87,33 @@ final class NotesListView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         addNoteButton.layer.cornerRadius = addNoteButton.bounds.size.height / 2
-
+    }
+    
+    func setNoteModel(_ note: [Note]) {
+        noteModel = note
+        listTableView.reloadData()
     }
 }
 
 extension NotesListView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        4
+        guard let model = noteModel else { return 0 }
+        return model.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: NotesTableViewCell.identifier, for: indexPath) as? NotesTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: NotesTableViewCell.identifier, for: indexPath) as? NotesTableViewCell,
+              let model = noteModel else {
             return UITableViewCell()
         }
         
-        cell.configureCell("Client meeting", "Tomorrow | 10:30pm", isCompleted: false)
+        let cellData = model[indexPath.row]
+        
+        cell.configureCell(cellData.noteName,
+                           cellData.noteDate,
+                           cellData.noteTime,
+                           isCompleted: cellData.isCompleted)
         
         return cell
     }
@@ -127,6 +140,12 @@ extension NotesListView: UITableViewDelegate {
         
         return headerView
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let model = noteModel else { return }
+        let cellData = model[indexPath.row]
+        viewModel.showNoteDetails(cellData)
+    }
 }
 
 private extension NotesListView {
@@ -135,6 +154,7 @@ private extension NotesListView {
     func addNewNoteButtonAction() {
         viewModel.showAddNewNote()
     }
+    
 }
 
 private extension NotesListView {

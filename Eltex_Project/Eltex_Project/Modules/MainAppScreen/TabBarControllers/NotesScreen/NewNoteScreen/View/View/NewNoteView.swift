@@ -1,13 +1,13 @@
 //
-//  AddNewNoteView.swift
+//  NewNoteView.swift
 //  Eltex_Project
 //
-//  Created by Vyacheslav Gusev on 23.12.2024.
+//  Created by Vyacheslav Gusev on 24.12.2024.
 //
 
 import UIKit
 
-final class AddNewNoteView: UIView {
+final class NewNoteView: UIView {
     
     private enum Constants {
         static let uiBackgroundColor: UIColor = UIColor(red: 5.0 / 255.0, green: 36.0 / 255.0, blue: 62.0 / 255.0, alpha: 1.0)
@@ -154,6 +154,7 @@ final class AddNewNoteView: UIView {
         button.layer.cornerRadius = 10
         button.layer.borderWidth = 1
         button.layer.borderColor = Constants.buttonBorderColor.cgColor
+        button.addTarget(self, action: #selector(cancelCreatingNewNote), for: .touchUpInside)
         return button
     }()
     
@@ -166,23 +167,26 @@ final class AddNewNoteView: UIView {
         button.layer.cornerRadius = 10
         button.layer.borderWidth = 1
         button.layer.borderColor = Constants.buttonBorderColor.cgColor
+        button.addTarget(self, action: #selector(createNewNote), for: .touchUpInside)
         return button
     }()
     
     private let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 5
         return view
     }()
     
+    private let viewModel: NewNoteViewModel
     private var bottomConstraint: NSLayoutConstraint!
+    private var editingNote: Note?
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, viewModel: NewNoteViewModel) {
+        self.viewModel = viewModel
         super.init(frame: frame)
-        
-        backgroundColor = .white
-        
-        setupViews()
+        setupView()
         setupKeyboardObservers()
     }
     
@@ -190,9 +194,24 @@ final class AddNewNoteView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func setEditingNoteData(_ data: Note) {
+        editingNote = data
+        setupFields()
+    }
+    
 }
 
-private extension AddNewNoteView {
+private extension NewNoteView {
+    
+    func setupFields() {
+        guard let note = editingNote else { return }
+        taskTextField.text = note.noteName
+        descriptionTaskTextView.text = note.noteDescription
+        dateTextField.text = note.noteDate
+        timeTextField.text = note.noteTime
+        createButton.setTitle("save", for: .normal)
+    }
     
     func setupKeyboardObservers() {
        NotificationCenter.default.addObserver(
@@ -210,6 +229,36 @@ private extension AddNewNoteView {
    }
     
     @objc
+    func cancelCreatingNewNote() {
+        guard let _ = editingNote else {
+            viewModel.closeScreen()
+            return
+        }
+        viewModel.cancelEditing()
+    }
+    
+    @objc
+    func createNewNote() {
+        guard let editingNote = editingNote else  {
+            let newNoteData = Note(noteId: UUID(),
+                                   noteName: taskTextField.text ?? "",
+                                   noteDate: dateTextField.text ?? "",
+                                   noteTime: timeTextField.text ?? "",
+                                   noteDescription: descriptionTaskTextView.text ?? "",
+                                   isCompleted: false)
+            viewModel.addNewNote(note: newNoteData)
+            return
+        }
+        let editedNoteData = Note(noteId: editingNote.noteId,
+                               noteName: taskTextField.text ?? "",
+                               noteDate: dateTextField.text ?? "",
+                               noteTime: timeTextField.text ?? "",
+                               noteDescription: descriptionTaskTextView.text ?? "",
+                               isCompleted: false)
+        viewModel.saveEditing(for: editedNoteData)
+    }
+    
+    @objc
     func keyboardWillShow(_ notification: Notification) {
         guard
             let userInfo = notification.userInfo,
@@ -219,7 +268,7 @@ private extension AddNewNoteView {
         }
         
         let keyboardHeight = keyboardFrame.height
-        bottomConstraint.constant = -(keyboardHeight + 16)
+        bottomConstraint.constant = -(keyboardHeight)
         
         UIView.animate(withDuration: 0.3) {
             self.layoutIfNeeded()
@@ -228,7 +277,7 @@ private extension AddNewNoteView {
     
     @objc
     func keyboardWillHide(_ notification: Notification) {
-        bottomConstraint.constant = -16
+        bottomConstraint.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.layoutIfNeeded()
         }
@@ -247,11 +296,12 @@ private extension AddNewNoteView {
         formatter.timeStyle = .short
         timeTextField.text = formatter.string(from: sender.date)
     }
+    
 }
 
-private extension AddNewNoteView {
+private extension NewNoteView {
     
-    func setupViews() {
+    func setupView() {
         addSubview(containerView)
         
         containerView.addSubview(taskTextField)
@@ -264,56 +314,57 @@ private extension AddNewNoteView {
         
         setupConstraints()
     }
-
+    
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            containerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16)
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -0),
+            containerView.topAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.topAnchor, constant: 16),
+            containerView.heightAnchor.constraint(equalToConstant: 444)
         ])
         
-        bottomConstraint = containerView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        bottomConstraint = containerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
         bottomConstraint.isActive = true
         
         NSLayoutConstraint.activate([
-            taskTextField.topAnchor.constraint(equalTo: containerView.topAnchor),
-            taskTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            taskTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            taskTextField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
+            taskTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            taskTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             taskTextField.heightAnchor.constraint(equalToConstant: 44)
         ])
         
         NSLayoutConstraint.activate([
             descriptionTaskTextView.topAnchor.constraint(equalTo: taskTextField.bottomAnchor, constant: 16),
-            descriptionTaskTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            descriptionTaskTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            descriptionTaskTextView.heightAnchor.constraint(equalToConstant: 100)
+            descriptionTaskTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            descriptionTaskTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            descriptionTaskTextView.heightAnchor.constraint(equalToConstant: 200)
         ])
         
         NSLayoutConstraint.activate([
             dateTextField.topAnchor.constraint(equalTo: descriptionTaskTextView.bottomAnchor, constant: 16),
-            dateTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            dateTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            dateTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            dateTextField.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -16),
             dateTextField.heightAnchor.constraint(equalToConstant: 44)
         ])
         
         NSLayoutConstraint.activate([
-            timeTextField.topAnchor.constraint(equalTo: dateTextField.bottomAnchor, constant: 16),
-            timeTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            timeTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            timeTextField.heightAnchor.constraint(equalToConstant: 44)
+            timeTextField.topAnchor.constraint(equalTo: descriptionTaskTextView.bottomAnchor, constant: 16),
+            timeTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            timeTextField.heightAnchor.constraint(equalToConstant: 44),
+            timeTextField.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 16)
         ])
         
         NSLayoutConstraint.activate([
-            cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            cancelButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -16),
-            cancelButton.widthAnchor.constraint(equalToConstant: 120),
+            cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            cancelButton.topAnchor.constraint(equalTo: dateTextField.bottomAnchor, constant: 16),
+            cancelButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -16),
             cancelButton.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
-            createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            createButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -16),
-            createButton.widthAnchor.constraint(equalToConstant: 120),
+            createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            createButton.topAnchor.constraint(equalTo: timeTextField.bottomAnchor, constant: 16),
+            createButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 16),
             createButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
