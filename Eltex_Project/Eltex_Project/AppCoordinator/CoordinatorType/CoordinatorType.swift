@@ -14,4 +14,5 @@ enum CoordinatorType {
     case notes
     case calendar
     case settings
+    case detail
 }
