@@ -35,14 +35,17 @@ final class HomeView: UIView {
         tableView.delegate = self
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
-        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: NotesTableViewCell.identifier)
+        tableView.register(NotesTableViewCell.self,
+                           forCellReuseIdentifier: NotesTableViewCell.identifier)
         return tableView
     }()
     
+    private let viewModel: HomeViewModel
     private var noteSections: [NoteSection]?
     
     // MARK: - Lifecycle
-    override init(frame: CGRect) {
+    init(frame: CGRect, viewModel: HomeViewModel) {
+        self.viewModel = viewModel
         super.init(frame: frame)
         setupView()
     }
@@ -92,6 +95,7 @@ extension HomeView: UITableViewDataSource {
         
         cell.configureCell(noteData.noteName,
                            noteData.noteDate,
+                           noteData.noteTime,
                            isCompleted: noteData.isCompleted)
         
         return cell
@@ -120,6 +124,12 @@ extension HomeView: UITableViewDelegate {
         ])
         
         return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let noteSectionModel = noteSections else { return }
+        let noteData = noteSectionModel[indexPath.section].notes[indexPath.row]
+        viewModel.showDetail(with: noteData)
     }
 }
 

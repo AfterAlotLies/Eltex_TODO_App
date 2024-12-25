@@ -45,8 +45,17 @@ final class NotesTableViewCell: UITableViewCell {
         return imageView
     }()
     
+    private lazy var moreInformationImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = UIImage(named: "cellInfoImage")
+        return imageView
+    }()
+    
     private lazy var taskContentStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [taskNameLabel, dateTaskLabel])
+        let stackView = UIStackView(arrangedSubviews: [taskNameLabel,
+                                                       dateTaskLabel])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.backgroundColor = .clear
@@ -55,7 +64,9 @@ final class NotesTableViewCell: UITableViewCell {
     }()
     
     private lazy var contentStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [completedTaskImageView, taskContentStackView])
+        let stackView = UIStackView(arrangedSubviews: [completedTaskImageView,
+                                                       taskContentStackView,
+                                                       moreInformationImageView])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.backgroundColor = .clear
@@ -85,10 +96,12 @@ final class NotesTableViewCell: UITableViewCell {
         completedTaskImageView.image = nil
     }
     
-    func configureCell(_ taskName: String, _ taskDate: String, isCompleted: Bool) {
+    func configureCell(_ taskName: String, _ taskDate: String, _ taskTime: String, isCompleted: Bool) {
         taskNameLabel.text = taskName
-        dateTaskLabel.text = taskDate
+        dateTaskLabel.text = "\(taskDate) | \(taskTime)"
         if isCompleted {
+            completedTaskImageView.isHidden = false
+            contentStackView.insertArrangedSubview(completedTaskImageView, at: 0)
             completedTaskImageView.image = UIImage(named: "completedTask")
         } else {
             completedTaskImageView.isHidden = true
@@ -118,6 +131,11 @@ private extension NotesTableViewCell {
         NSLayoutConstraint.activate([
             completedTaskImageView.heightAnchor.constraint(equalToConstant: 20),
             completedTaskImageView.widthAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        NSLayoutConstraint.activate([
+            moreInformationImageView.widthAnchor.constraint(equalToConstant: 11),
+            moreInformationImageView.heightAnchor.constraint(equalToConstant: 16)
         ])
         
         NSLayoutConstraint.activate([

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 // MARK: - TabBarPages
 enum TabBarPages: CaseIterable {
@@ -42,18 +43,21 @@ final class MainAppTabBarCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     private var tabBarController: UITabBarController
+    private var subscriptions: Set<AnyCancellable> = []
     private let userInfo: UserInfo
-    private let notesRepository = NotesRepository()
+    private let notesRepository: NotesRepository
+    
+    let coordinatorDidFinish = PassthroughSubject<Void, Never>()
     
     init(navigationController: UINavigationController, userInfo: UserInfo) {
         self.navigationController = navigationController
         self.userInfo = userInfo
         self.tabBarController = UITabBarController()
+        self.notesRepository = NotesRepository(userInfo: self.userInfo)
     }
     
     // MARK: - Start
     func start() {
-        print("tab bar started")
         let pages: [TabBarPages] = TabBarPages.allCases
         
         let viewController = pages.map { setupScreenCoordinator($0) }
@@ -63,7 +67,12 @@ final class MainAppTabBarCoordinator: Coordinator {
         tabBarController.view.backgroundColor = .clear
         tabBarController.tabBar.isTranslucent = false
         
+        navigationController.isNavigationBarHidden = true
         navigationController.setViewControllers([tabBarController], animated: true)
+    }
+    
+    deinit {
+        print("tabbar deinited coorditanor")
     }
 }
 
@@ -91,7 +100,8 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
             return homeCoordinator.navigationController
             
         case .notesList:
-            let notesListCoordinator = NotesListCoordinator(navigationController: childNavigationController)
+            let notesListCoordinator = NotesListCoordinator(navigationController: childNavigationController,
+                                                            notesRepository: notesRepository)
             childrenCoordinator.append(notesListCoordinator)
             notesListCoordinator.start()
             return notesListCoordinator.navigationController
@@ -104,9 +114,28 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
             
         case .settings:
             let settingsCoordinator = SettingsCoordinator(navigationController: childNavigationController)
+            
+            settingsCoordinator.coordinatorDidFinished
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    self.coordinatorDidFinish.send()
+                    self.childrenCoordinator.removeAll()
+                    self.cancelSubscriptions()
+                }
+                .store(in: &subscriptions)
+            
             childrenCoordinator.append(settingsCoordinator)
             settingsCoordinator.start()
             return settingsCoordinator.navigationController
         }
+    }
+    
+}
+
+private extension MainAppTabBarCoordinator {
+    
+    func cancelSubscriptions() {
+        subscriptions.forEach { $0.cancel() }
+        subscriptions.removeAll()
     }
 }
