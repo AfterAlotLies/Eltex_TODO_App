@@ -40,16 +40,11 @@ final class UserCacheService {
         try? fileManager.removeItem(at: filePath)
     }
     
-    private func saveUserToDisk(_ user: UserInfo) {
-        do {
-            let data = try JSONEncoder().encode(user)
-            try data.write(to: filePath, options: .atomic)
-        } catch {
-            fatalError("Failed to save user to disk: \(error)")
-        }
-    }
+}
+
+private extension UserCacheService {
     
-    private func loadUserFromDisk() {
+    func loadUserFromDisk() {
         guard fileManager.fileExists(atPath: filePath.path) else { return }
         
         do {
@@ -59,6 +54,15 @@ final class UserCacheService {
             cache.setObject(wrapper, forKey: "authenticatedUser")
         } catch {
             fatalError("Failed to load user from disk: \(error)")
+        }
+    }
+    
+    func saveUserToDisk(_ user: UserInfo) {
+        do {
+            let data = try JSONEncoder().encode(user)
+            try data.write(to: filePath, options: .atomic)
+        } catch {
+            fatalError("Failed to save user to disk: \(error)")
         }
     }
 }
