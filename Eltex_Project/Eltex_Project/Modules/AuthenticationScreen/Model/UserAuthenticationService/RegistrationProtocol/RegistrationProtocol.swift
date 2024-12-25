@@ -10,6 +10,4 @@ import Foundation
 
 protocol RegistrationProtocol {
     func addUserToDataBase(userName: String, userEmail: String, userPassword: String) -> AnyPublisher<UserInfo, Error>
-    func deleteAllUsers()
-    func fetchAllUsers()
 }

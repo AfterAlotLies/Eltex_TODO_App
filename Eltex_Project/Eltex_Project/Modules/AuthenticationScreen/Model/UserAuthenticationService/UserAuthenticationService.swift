@@ -32,37 +32,6 @@ final class UserAuthenticationService {
         }
         return container
     }()
-    
-    func fetchAllUsers() {
-        let context = persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        
-        do {
-            let users = try context.fetch(fetchRequest)
-            for user in users {
-                print("User ID: \(user.id?.uuidString ?? "No ID")")
-                print("Name: \(user.name ?? "No Name")")
-                print("Email: \(user.email ?? "No Email")")
-            }
-        } catch {
-            print("Failed to fetch users: \(error)")
-        }
-    }
-    
-    func deleteAllUsers() {
-        let context = persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = UserEntity.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
-        do {
-            try context.execute(deleteRequest)
-            try context.save()
-            print("All users deleted successfully")
-        } catch {
-            print("Failed to delete all users: \(error)")
-        }
-    }
-    
 }
 
 // MARK: - UserAuthenticationService + RegistrationProtocol
@@ -94,8 +63,8 @@ extension UserAuthenticationService: RegistrationProtocol {
                     do {
                         try context.save()
                         print("User saved successfully")
-                        promise(.success(UserInfo(name: userEntity.name ?? "No name",
-                                                  email: userEntity.email ?? "No email",
+                        promise(.success(UserInfo(name: userEntity.name,
+                                                  email: userEntity.email,
                                                   id: userEntity.id)))
                     } catch {
                         print("Failed to save user: \(error)")
@@ -127,8 +96,8 @@ extension UserAuthenticationService: LoginProtocol {
                 
                 if let user = users.first {
                     if user.password == password {
-                        promise(.success(UserInfo(name: user.name ?? "No name",
-                                                  email: user.email ?? "No email",
+                        promise(.success(UserInfo(name: user.name,
+                                                  email: user.email,
                                                   id: user.id)))
                     } else {
                         promise(.failure(UserAuthorizationResult.invalidPassword))
