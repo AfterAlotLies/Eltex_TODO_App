@@ -66,6 +66,10 @@ final class MainAppTabBarCoordinator: Coordinator {
         tabBarController.selectedIndex = 0
         tabBarController.view.backgroundColor = .clear
         tabBarController.tabBar.isTranslucent = false
+        tabBarController.tabBar.tintColor = UIColor(red: 134/255, green: 218/255, blue: 237/255, alpha: 1)
+        tabBarController.tabBar.shadowImage = UIImage()
+        tabBarController.tabBar.backgroundImage = UIImage()
+        tabBarController.tabBar.unselectedItemTintColor = .white
         
         navigationController.isNavigationBarHidden = true
         navigationController.setViewControllers([tabBarController], animated: true)
@@ -82,7 +86,8 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
     func setupScreenCoordinator(_ page: TabBarPages) -> UINavigationController {
         let childNavigationController = UINavigationController()
         childNavigationController.isNavigationBarHidden = true
-        childNavigationController.view.applyGradientBackground(colors: [AppBackgroundColors.topColor, AppBackgroundColors.bottomColor])
+        childNavigationController.view.applyGradientBackground(colors: [AppBackgroundColors.topColor,
+                                                                        AppBackgroundColors.bottomColor])
         
         childNavigationController.tabBarItem = UITabBarItem(
             title: "",
@@ -107,7 +112,8 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
             return notesListCoordinator.navigationController
             
         case .calendar:
-            let calendarCoordinator = CalendarCoordinator(navigationController: childNavigationController)
+            let calendarCoordinator = CalendarCoordinator(navigationController: childNavigationController,
+                                                          notesRepository: notesRepository)
             childrenCoordinator.append(calendarCoordinator)
             calendarCoordinator.start()
             return calendarCoordinator.navigationController
