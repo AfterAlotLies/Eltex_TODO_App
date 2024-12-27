@@ -46,7 +46,7 @@ private extension HomeViewModel {
         notesRepository.newNotePublisher
             .sink { [weak self] newNote in
                 guard let self = self,
-                let note = newNote else {
+                      let note = newNote else {
                     return
                 }
                 self.userNotes.append(note)
@@ -73,20 +73,12 @@ private extension HomeViewModel {
         }
         
         noteSections = sections
-        
-        noteSections.forEach { print($0) }
     }
     
     func getNearestNotes() -> ([Note], [Note]) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "d MMMM yyyy"
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
-        let today = Calendar.current.startOfDay(for: Date())
-        guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today) else {
-            print("Ошибка при расчёте даты 'Завтра'")
-            return ([], [])
-        }
         
         let sortedNotes = userNotes.sorted { note1, note2 in
             guard let date1 = dateFormatter.date(from: note1.noteDate),
@@ -96,30 +88,12 @@ private extension HomeViewModel {
             return date1 < date2
         }
         
-        let filteredNotes = sortedNotes.filter { note in
-            guard let noteDate = dateFormatter.date(from: note.noteDate) else { return false }
-            return noteDate >= today
-        }
-        
-        let updatedNotes = filteredNotes.map { note -> Note in
-            guard let noteDate = dateFormatter.date(from: note.noteDate) else { return note }
-            
-            var updatedNote = note
-            if Calendar.current.isDate(noteDate, inSameDayAs: today) {
-                updatedNote.noteDate = "Today"
-            } else if Calendar.current.isDate(noteDate, inSameDayAs: tomorrow) {
-                updatedNote.noteDate = "Tomorrow"
-            }
-            return updatedNote
-        }
-        
-        let completedNotes = updatedNotes.filter { $0.isCompleted }
-        let uncompletedNotes = updatedNotes.filter { !$0.isCompleted }
+        let completedNotes = sortedNotes.filter { $0.isCompleted }
+        let uncompletedNotes = sortedNotes.filter { !$0.isCompleted }
         
         let nearestCompleted = Array(completedNotes.prefix(2))
         let nearestUncompleted = Array(uncompletedNotes.prefix(2))
         
         return (nearestUncompleted, nearestCompleted)
     }
-
 }

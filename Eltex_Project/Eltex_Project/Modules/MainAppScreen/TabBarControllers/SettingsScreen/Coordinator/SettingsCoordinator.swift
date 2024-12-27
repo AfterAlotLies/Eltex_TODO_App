@@ -50,6 +50,7 @@ extension SettingsCoordinator: SettingsCoordinatorProtocol {
             .store(in: &subscriptions)
         
         let settingsVC = SettingsViewController(viewModel: viewModel)
+        navigationController.isNavigationBarHidden = false
         navigationController.pushViewController(settingsVC, animated: true)
     }
 }

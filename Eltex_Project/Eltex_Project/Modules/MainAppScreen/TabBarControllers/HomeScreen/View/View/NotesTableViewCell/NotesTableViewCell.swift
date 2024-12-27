@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import Combine
 
 // MARK: - NotesTableViewCell
 final class NotesTableViewCell: UITableViewCell {
+    
+    static let identifier: String = String(describing: NotesTableViewCell.self)
     
     private lazy var contentViewCell: UIView = {
         let view = UIView()
@@ -75,8 +78,8 @@ final class NotesTableViewCell: UITableViewCell {
         return stackView
     }()
     
-    static let identifier: String = String(describing: NotesTableViewCell.self)
-    
+    private var subscriptions: Set<AnyCancellable> = []
+
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -97,8 +100,8 @@ final class NotesTableViewCell: UITableViewCell {
     }
     
     func configureCell(_ taskName: String, _ taskDate: String, _ taskTime: String, isCompleted: Bool) {
+        dateTaskLabel.text = formatNoteDate(taskDate, taskTime)
         taskNameLabel.text = taskName
-        dateTaskLabel.text = "\(taskDate) | \(taskTime)"
         if isCompleted {
             completedTaskImageView.isHidden = false
             contentStackView.insertArrangedSubview(completedTaskImageView, at: 0)
@@ -106,6 +109,32 @@ final class NotesTableViewCell: UITableViewCell {
         } else {
             completedTaskImageView.isHidden = true
             contentStackView.removeArrangedSubview(completedTaskImageView)
+        }
+    }
+}
+
+private extension NotesTableViewCell {
+    
+    func formatNoteDate(_ taskDate: String, _ taskTime: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "d MMMM yyyy"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        let today = Calendar.current.startOfDay(for: Date())
+        
+        guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today) else {
+            return "\(taskDate) | \(taskTime)"
+        }
+        
+        guard let noteDate = dateFormatter.date(from: taskDate) else {
+            return "\(taskDate) | \(taskTime)"
+        }
+        
+        if Calendar.current.isDate(noteDate, inSameDayAs: today) {
+            return "Today | \(taskTime)"
+        } else if Calendar.current.isDate(noteDate, inSameDayAs: tomorrow) {
+            return "Tomorrow | \(taskTime)"
+        } else {
+            return "\(taskDate) | \(taskTime)"
         }
     }
 }

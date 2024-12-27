@@ -66,6 +66,10 @@ final class NotesListView: UIView {
         button.setImage(UIImage(named: "addNoteImage"), for: .normal)
         button.tintColor = .white
         button.backgroundColor = Constants.addNoteBackgroundColor
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 10
         button.addTarget(self, action: #selector(addNewNoteButtonAction), for: .touchUpInside)
         return button
     }()

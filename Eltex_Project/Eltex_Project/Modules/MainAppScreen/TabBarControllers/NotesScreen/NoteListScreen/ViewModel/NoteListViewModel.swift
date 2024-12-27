@@ -69,11 +69,6 @@ private extension NoteListViewModel {
         
         let today = Calendar.current.startOfDay(for: Date())
         
-        guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today) else {
-            unCompletedNotes = []
-            return
-        }
-        
         let validNotes = userNotes.compactMap { note -> (Note, Date)? in
             guard let date = dateFormatter.date(from: note.noteDate) else {
                 return nil
@@ -98,18 +93,7 @@ private extension NoteListViewModel {
             return leftDate < rightDate
         }
         
-        let updatedNotes = sortedNotes.map { item -> Note in
-            let (note, noteDate) = item
-            var updatedNote = note
-            
-            if Calendar.current.isDate(noteDate, inSameDayAs: today) {
-                updatedNote.noteDate = "Today"
-            } else if Calendar.current.isDate(noteDate, inSameDayAs: tomorrow) {
-                updatedNote.noteDate = "Tomorrow"
-            }
-            return updatedNote
-        }
-        unCompletedNotes = updatedNotes
+        unCompletedNotes = sortedNotes.map { $0.0 }
     }
 
 }

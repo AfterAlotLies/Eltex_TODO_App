@@ -175,7 +175,11 @@ final class NewNoteView: UIView {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
-        view.layer.cornerRadius = 5
+        view.layer.cornerRadius = 20
+        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.5).cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: -4)
+        view.layer.shadowRadius = 1
+        view.layer.shadowOpacity = 0.4
         return view
     }()
     
@@ -203,6 +207,18 @@ final class NewNoteView: UIView {
 }
 
 private extension NewNoteView {
+    
+    func setupDefaultDate() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy"
+        dateTextField.text = formatter.string(from: Date())
+        datePicker.date = Date()
+        
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "HH:mm"
+        timeTextField.text = timeFormatter.string(from: Date()) 
+        timePicker.date = Date()
+    }
     
     func setupFields() {
         guard let note = editingNote else { return }
@@ -313,6 +329,7 @@ private extension NewNoteView {
         containerView.addSubview(createButton)
         
         setupConstraints()
+        setupDefaultDate()
     }
     
     func setupConstraints() {

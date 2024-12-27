@@ -94,7 +94,7 @@ private extension SettingsTableViewCell {
         NSLayoutConstraint.activate([
             settingNameLabel.centerYAnchor.constraint(equalTo: settingImageView.centerYAnchor),
             settingNameLabel.leadingAnchor.constraint(equalTo: settingImageView.trailingAnchor, constant: 16),
-            settingNameLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -24)
+            settingNameLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -16)
         ])
         
         NSLayoutConstraint.activate([

@@ -40,6 +40,11 @@ final class OnboardingView: UIView {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.clear.cgColor
         
+        button.layer.shadowColor = UIColor.white.withAlphaComponent(0.5).cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowOpacity = 0.6
+        button.layer.shadowRadius = 5
+        
         button.addTarget(self, action: #selector(nextButtonHandler), for: .touchUpInside)
         return button
     }()
