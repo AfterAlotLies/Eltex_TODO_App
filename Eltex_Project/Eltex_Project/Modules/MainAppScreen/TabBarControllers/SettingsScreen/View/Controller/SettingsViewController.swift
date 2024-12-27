@@ -49,7 +49,15 @@ private extension SettingsViewController {
     
     func setupController() {
         view.addSubview(settingsView)
+        navigationController?.navigationBar.prefersLargeTitles = false
         
+        let titleLabel = UILabel()
+        titleLabel.text = "Settings"
+        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        titleLabel.textColor = .white
+        titleLabel.textAlignment = .center
+        
+        navigationItem.titleView = titleLabel
         setupConstraints()
     }
     
