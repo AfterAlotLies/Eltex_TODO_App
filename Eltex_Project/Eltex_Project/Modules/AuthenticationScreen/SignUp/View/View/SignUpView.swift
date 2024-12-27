@@ -170,6 +170,8 @@ private extension SignUpView {
         addSubview(messageLabel)
         addSubview(signInMessageButton)
         
+        passwordInputTextField.isSecureTextEntry = true
+        
         setupConstraints()
     }
     

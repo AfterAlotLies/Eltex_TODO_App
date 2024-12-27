@@ -52,7 +52,6 @@ final class SignInView: UIView {
                                                                              leftImage: "emailImage")
     private lazy var passwordInputTextField: UITextField = createInputTextField(placeholder: "Password",
                                                                                 leftImage: "passwordImage")
-
     
     private lazy var signInButton: UIButton = {
         let button = UIButton(type: .system)
@@ -165,6 +164,8 @@ private extension SignInView {
         addSubview(messageLabel)
         addSubview(signUpMessageButton)
         
+        passwordInputTextField.isSecureTextEntry = true
+        
         setupConstraints()
     }
     
@@ -218,6 +219,5 @@ private extension SignInView {
         NSLayoutConstraint.activate([
             signUpMessageButton.centerYAnchor.constraint(equalTo: messageLabel.centerYAnchor),
         ])
-
     }
 }
