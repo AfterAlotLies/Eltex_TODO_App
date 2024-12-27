@@ -116,14 +116,11 @@ final class UserNotesService {
                 if let noteToUpdate = results.first {
                     noteToUpdate.isCompleted = true
                     try self.context.save()
-                    print("Заметка обновлена как выполненная.")
                     promise(.success(true))
                 } else {
-                    print("Заметка не найдена.")
                     promise(.success(false))
                 }
             } catch {
-                print("Ошибка при обновлении заметки: \(error.localizedDescription)")
                 promise(.success(false))
             }
         }
@@ -150,15 +147,12 @@ final class UserNotesService {
                         try self.context.save()
                         promise(.success(true))
                     } else {
-                        print("Note not found.")
                         promise(.success(false))
                     }
                 } else {
-                    print("User not found.")
                     promise(.success(false))
                 }
             } catch {
-                print("Failed to update note: \(error.localizedDescription)")
                 promise(.success(false))
             }
         }
