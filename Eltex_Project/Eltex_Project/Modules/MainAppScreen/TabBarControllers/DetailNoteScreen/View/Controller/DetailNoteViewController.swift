@@ -8,10 +8,12 @@
 import UIKit
 import Combine
 
+// MARK: - DetailNoteViewController
 final class DetailNoteViewController: UIViewController {
     
     private lazy var detailNoteView: DetailNoteView = {
-        let view = DetailNoteView(frame: .zero, viewModel: viewModel)
+        let view = DetailNoteView(frame: .zero,
+                                  viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setUserNoteData(choosenNote)
         return view
@@ -21,6 +23,7 @@ final class DetailNoteViewController: UIViewController {
     private let viewModel: DetailNoteViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(choosenNote: Note, viewModel: DetailNoteViewModel) {
         self.choosenNote = choosenNote
         self.viewModel = viewModel
@@ -39,6 +42,7 @@ final class DetailNoteViewController: UIViewController {
     }
 }
 
+// MARK: - Private Methods
 private extension DetailNoteViewController {
     
     func setupBindings() {
@@ -53,7 +57,8 @@ private extension DetailNoteViewController {
     func setupController() {
         view.addSubview(detailNoteView)
         
-        view.applyGradientBackground(colors: [AppBackgroundColors.topColor, AppBackgroundColors.bottomColor])
+        view.applyGradientBackground(colors: [AppBackgroundColors.topColor,
+                                              AppBackgroundColors.bottomColor])
         
         setupConstraints()
     }

@@ -8,25 +8,59 @@
 import UIKit
 import FSCalendar
 
+// MARK: - CalendarView
 final class CalendarView: UIView {
+    
+    private enum Constants {
+        static let calendarSelectionColor: UIColor = UIColor(red: 23/255,
+                                                             green: 161/255,
+                                                             blue: 250/255,
+                                                             alpha: 0.4)
+        static let calendarTodayColor: UIColor = UIColor(red: 23/255,
+                                                         green: 161/255,
+                                                         blue: 250/255,
+                                                         alpha: 1)
+        static let calendarBackgroundFirstColor: UIColor = UIColor(red: 26/255,
+                                                                   green: 66/255,
+                                                                   blue: 130/255,
+                                                                   alpha: 1)
+        static let calendarBackgroundSecondColor: UIColor = UIColor(red: 43/255,
+                                                                    green: 86/255,
+                                                                    blue: 161/255,
+                                                                    alpha: 1)
+        static let leftChevronImage = UIImage(systemName: "chevron.left")
+        static let rightChevronImage = UIImage(systemName: "chevron.right")
+        static let chevronTintColor: UIColor = UIColor(red: 99/255,
+                                                       green: 217/255,
+                                                       blue: 243/255,
+                                                       alpha: 1)
+        static let leadingAnchor: CGFloat = 16
+        static let trailingAnchor: CGFloat = -16
+    }
     
     private lazy var calendarView: FSCalendar = {
         let calendarView = FSCalendar()
         calendarView.translatesAutoresizingMaskIntoConstraints = false
-        calendarView.appearance.selectionColor = UIColor(red: 23/255, green: 161/255, blue: 250/255, alpha: 0.4)
-        calendarView.appearance.todayColor = UIColor(red: 23/255, green: 161/255, blue: 250/255, alpha: 1)
+        
+        calendarView.appearance.selectionColor = Constants.calendarSelectionColor
+        calendarView.appearance.todayColor = Constants.calendarTodayColor
         calendarView.appearance.titleFont = .systemFont(ofSize: 11)
         calendarView.appearance.weekdayFont = .systemFont(ofSize: 11)
         calendarView.appearance.headerDateFormat = "MMMM"
-        calendarView.firstWeekday = 2
         calendarView.appearance.weekdayTextColor = UIColor.white
         calendarView.appearance.headerTitleColor = UIColor.white
         calendarView.appearance.titleDefaultColor = UIColor.white
         calendarView.appearance.titleWeekendColor = UIColor.systemBlue
+        calendarView.appearance.headerTitleColor = .clear
+        calendarView.appearance.eventDefaultColor = .red
+        
+        calendarView.firstWeekday = 2
+        
         calendarView.delegate = self
         calendarView.dataSource = self
-        calendarView.appearance.headerTitleColor = .clear
+        
         calendarView.headerHeight = 50
+        
         return calendarView
     }()
     
@@ -48,18 +82,22 @@ final class CalendarView: UIView {
     private lazy var previousButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = UIColor(red: 99/255, green: 217/255, blue: 243/255, alpha: 1)
-        button.addTarget(self, action: #selector(previousMonth), for: .touchUpInside)
+        button.setImage(Constants.leftChevronImage, for: .normal)
+        button.tintColor = Constants.chevronTintColor
+        button.addTarget(self,
+                         action: #selector(previousMonth),
+                         for: .touchUpInside)
         return button
     }()
     
     private lazy var nextButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        button.tintColor = UIColor(red: 99/255, green: 217/255, blue: 243/255, alpha: 1)
-        button.addTarget(self, action: #selector(nextMonth), for: .touchUpInside)
+        button.setImage(Constants.rightChevronImage, for: .normal)
+        button.tintColor = Constants.chevronTintColor
+        button.addTarget(self,
+                         action: #selector(nextMonth),
+                         for: .touchUpInside)
         return button
     }()
     
@@ -77,13 +115,16 @@ final class CalendarView: UIView {
         tableView.separatorStyle = .none
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: NotesTableViewCell.identifier)
+        tableView.register(NotesTableViewCell.self,
+                           forCellReuseIdentifier: NotesTableViewCell.identifier)
         return tableView
     }()
     
     private let viewModel: CalendarViewModel
     private var visibleNotesModel: [Note]?
+    private var userNotes: [Note]?
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: CalendarViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -100,12 +141,19 @@ final class CalendarView: UIView {
         setupCalendarBackground(for: calendarView)
     }
     
+    // MARK: - Public Methods
     func setVisibleNotes(_ data: [Note]) {
         visibleNotesModel = data
         visibleUserNotesTableView.reloadData()
     }
+    
+    func setUserNotes(_ data: [Note]) {
+        userNotes = data
+        calendarView.reloadData()
+    }
 }
 
+// MARK: - CalendarView + UITableViewDataSource
 extension CalendarView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -130,6 +178,7 @@ extension CalendarView: UITableViewDataSource {
     }
 }
 
+// MARK: - CalendarView + UITableViewDelegate
 extension CalendarView: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -139,6 +188,7 @@ extension CalendarView: UITableViewDelegate {
     }
 }
 
+// MARK: - CalendarView + FSCalendarDelegateAppearance
 extension CalendarView: FSCalendarDelegateAppearance {
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
@@ -159,8 +209,23 @@ extension CalendarView: FSCalendarDelegateAppearance {
         return nil
     }
     
+    func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
+        guard let userNotes = userNotes else { return 0 }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
+        formatter.timeZone = TimeZone.current
+        
+        let targetDateString = formatter.string(from: date)
+        
+        let matchingNotes = userNotes.filter { $0.noteDate == targetDateString }
+        
+        return matchingNotes.isEmpty ? 0 : 1
+    }
+
 }
 
+// MARK: - CalendarView + FSCalendarDelegate + FSCalendarDataSource
 extension CalendarView: FSCalendarDelegate, FSCalendarDataSource {
     
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
@@ -172,10 +237,12 @@ extension CalendarView: FSCalendarDelegate, FSCalendarDataSource {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
         formatter.timeZone = TimeZone.current
+        viewModel.setSelectedDate(with: date)
         viewModel.filterNote(with: date)
     }
 }
 
+// MARK: - Private Methods
 private extension CalendarView {
     
     @objc
@@ -209,11 +276,14 @@ private extension CalendarView {
     func setupCalendarBackground(for calendar: FSCalendar) {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
-            UIColor(red: 26/255, green: 66/255, blue: 130/255, alpha: 1).cgColor,
-            UIColor(red: 43/255, green: 86/255, blue: 161/255, alpha: 1).cgColor
+            Constants.calendarBackgroundFirstColor.cgColor,
+            Constants.calendarBackgroundSecondColor.cgColor
         ]
-        gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
-        gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
+        gradientLayer.startPoint = CGPoint(x: 0.0,
+                                           y: 0.0)
+
+        gradientLayer.endPoint = CGPoint(x: 1.0,
+                                         y: 0.5)
         gradientLayer.frame = calendar.bounds
         
         let backgroundView = UIView(frame: calendar.bounds)
@@ -249,22 +319,22 @@ private extension CalendarView {
         NSLayoutConstraint.activate([
             calendarView.heightAnchor.constraint(equalToConstant: 285),
             calendarView.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
-            calendarView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            calendarView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            calendarView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            calendarView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor)
         ])
         
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
-            headerView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            headerView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            headerView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         NSLayoutConstraint.activate([
-            previousButton.trailingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: -16),
+            previousButton.trailingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: Constants.trailingAnchor),
             previousButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
             
-            nextButton.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 16),
+            nextButton.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: Constants.leadingAnchor),
             nextButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
             
             titleLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),

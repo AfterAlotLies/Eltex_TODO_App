@@ -69,12 +69,13 @@ class SnakePageControl: UIView {
     
     
     // MARK: - State Update
-    
     fileprivate func updateNumberOfPages(_ count: Int) {
         guard count != inactiveLayers.count else { return }
         inactiveLayers.forEach() { $0.removeFromSuperlayer() }
         inactiveLayers = [CALayer]()
-        inactiveLayers = stride(from: 0, to:count, by:1).map() { _ in
+        inactiveLayers = stride(from: 0,
+                                to: count,
+                                by: 1).map() { _ in
             let layer = CALayer()
             layer.backgroundColor = self.inactiveTint.cgColor
             self.layer.addSublayer(layer)
@@ -103,7 +104,8 @@ class SnakePageControl: UIView {
     }
     
     fileprivate func layoutInactivePageIndicators(_ layers: [CALayer]) {
-        var layerFrame = CGRect(x: 0, y: 0, width: indicatorDiameter * 4, height: indicatorDiameter)
+        var layerFrame = CGRect(x: 0, y: 0,
+                                width: indicatorDiameter * 4, height: indicatorDiameter)
         layers.forEach() { layer in
             layer.cornerRadius = indicatorRadius
             layer.frame = layerFrame
@@ -119,5 +121,4 @@ class SnakePageControl: UIView {
         return CGSize(width: CGFloat(inactiveLayers.count) * indicatorDiameter + CGFloat(inactiveLayers.count - 1) * indicatorPadding,
                       height: indicatorDiameter)
     }
-    
 }

@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 
+// MARK: - NotesRepository
 final class NotesRepository {
     
     private let userNotesService: UserNotesService
@@ -22,6 +23,7 @@ final class NotesRepository {
         self.userNotesService = UserNotesService()
     }
     
+    // MARK: - Get Notes
     func getAllNoteForUser() {
         guard let userId = userInfo.id else { return }
         
@@ -43,6 +45,7 @@ final class NotesRepository {
             .store(in: &subscriptions)
     }
     
+    // MARK: - Add New Note
     func addNewNoteForUser(newNote: Note) {
         guard let userId = userInfo.id else { return }
         
@@ -56,6 +59,7 @@ final class NotesRepository {
             .store(in: &subscriptions)
     }
     
+    // MARK: - Delete Note
     func deleteNoteForUser(noteId: UUID) {
         guard let userId = userInfo.id else { return }
         
@@ -69,6 +73,7 @@ final class NotesRepository {
             .store(in: &subscriptions)
     }
     
+    // MARK: - Mark Completed Note
     func markNoteCompleted(noteId: UUID) {
         guard let userId = userInfo.id else { return }
         
@@ -82,6 +87,7 @@ final class NotesRepository {
             .store(in: &subscriptions)
     }
     
+    // MARK: - Update Note Data
     func updateNoteForUser(noteData: Note) {
         guard let userId = userInfo.id else { return }
         userNotesService.updateNoteForUser(by: userId, noteId: noteData.noteId, updatedNoteData: noteData)

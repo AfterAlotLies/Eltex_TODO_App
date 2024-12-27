@@ -7,7 +7,12 @@
 
 import UIKit
 
+// MARK: - SettingsTableViewCell
 final class SettingsTableViewCell: UITableViewCell {
+    
+    private enum Constants {
+        static let cellInfoImage = UIImage(named: "cellInfoImage")
+    }
     
     static let identifier: String = String(describing: SettingsTableViewCell.self)
     
@@ -29,7 +34,7 @@ final class SettingsTableViewCell: UITableViewCell {
     private lazy var moreInformationCell: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "cellInfoImage")
+        imageView.image = Constants.cellInfoImage
         return imageView
     }()
     
@@ -47,6 +52,7 @@ final class SettingsTableViewCell: UITableViewCell {
         return view
     }()
     
+    // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
@@ -58,12 +64,14 @@ final class SettingsTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Public Methods
     func configureCell(with settings: Settings) {
         settingImageView.image = UIImage(named: settings.image)
         settingNameLabel.text = settings.title
     }
 }
 
+// MARK: - Private Methods
 private extension SettingsTableViewCell {
     
     func setupCell() {

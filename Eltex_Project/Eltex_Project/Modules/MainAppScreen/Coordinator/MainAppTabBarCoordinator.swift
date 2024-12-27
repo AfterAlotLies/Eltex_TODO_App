@@ -37,6 +37,13 @@ protocol MainAppTabBarCoordinatorProtocol {
 // MARK: - MainAppTabBarCoordinator + Coordinator
 final class MainAppTabBarCoordinator: Coordinator {
     
+    private enum Constants {
+        static let tinColor: UIColor = UIColor(red: 134/255,
+                                               green: 218/255,
+                                               blue: 237/255,
+                                               alpha: 1)
+    }
+    
     var type: CoordinatorType { .tabbar }
     
     var childrenCoordinator: [Coordinator] = []
@@ -66,7 +73,7 @@ final class MainAppTabBarCoordinator: Coordinator {
         tabBarController.selectedIndex = 0
         tabBarController.view.backgroundColor = .clear
         tabBarController.tabBar.isTranslucent = false
-        tabBarController.tabBar.tintColor = UIColor(red: 134/255, green: 218/255, blue: 237/255, alpha: 1)
+        tabBarController.tabBar.tintColor = Constants.tinColor
         tabBarController.tabBar.shadowImage = UIImage()
         tabBarController.tabBar.backgroundImage = UIImage()
         tabBarController.tabBar.unselectedItemTintColor = .white
@@ -131,9 +138,9 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
             return settingsCoordinator.navigationController
         }
     }
-    
 }
 
+// MARK: - Private methods
 private extension MainAppTabBarCoordinator {
     
     func cancelSubscriptions() {

@@ -8,16 +8,29 @@
 import UIKit
 import Combine
 
+// MARK: - DetailNoteCoordinatorDelegate
 protocol DetailNoteCoordinatorDelegate: AnyObject {
     func detailNoteCoordinatorDidFinish(_ coordinator: DetailNoteCoordinator)
 }
 
+// MARK: - DetailNoteCoordinatorProtocol
 protocol DetailNoteCoordinatorProtocol {
     func showDetailtNote(note: Note)
     func showEditingNote(note: Note, detailVM: DetailNoteViewModel)
 }
 
+// MARK: - DetailNoteCoordinator + Coordinator
 final class DetailNoteCoordinator: Coordinator {
+    
+    private enum Constants {
+        static let backButtonImage = UIImage(named: "backButtonImage")
+        static let backButtonTintColor: UIColor = UIColor(red: 99.0 / 255.0,
+                                                          green: 217.0 / 255.0,
+                                                          blue: 243.0 / 255.0,
+                                                          alpha: 1)
+        static let titleLabelText = "Task Details"
+    }
+    
     var childrenCoordinator: [Coordinator] = []
     
     var navigationController: UINavigationController
@@ -36,11 +49,13 @@ final class DetailNoteCoordinator: Coordinator {
         self.note = note
     }
     
+    // MARK: - Start
     func start() {
         showDetailtNote(note: note)
     }
 }
 
+// MARK: - DetailNoteCoordinator + DetailNoteCoordinatorProtocol
 extension DetailNoteCoordinator: DetailNoteCoordinatorProtocol {
     
     func showDetailtNote(note: Note) {
@@ -93,6 +108,7 @@ extension DetailNoteCoordinator: DetailNoteCoordinatorProtocol {
     }
 }
 
+// MARK: - Private Methods
 private extension DetailNoteCoordinator {
     
     func cancelSubscriptions() {
@@ -104,21 +120,17 @@ private extension DetailNoteCoordinator {
         vc.navigationItem.hidesBackButton = true
         
         let backButton = UIButton(type: .system)
-        backButton.setImage(UIImage(named: "backButtonImage"),
+        backButton.setImage(Constants.backButtonImage,
                             for: .normal)
-        backButton.tintColor =  UIColor(red: 99.0 / 255.0,
-                                        green: 217.0 / 255.0,
-                                        blue: 243.0 / 255.0,
-                                        alpha: 1)
+        backButton.tintColor = Constants.backButtonTintColor
         backButton.addTarget(self,
                              action: #selector(backButtonTapped),
                              for: .touchUpInside)
         
         let titleLabel = UILabel()
-        titleLabel.text = "Task Details"
+        titleLabel.text = Constants.titleLabelText
         titleLabel.textColor = .white
-        titleLabel.font = UIFont.systemFont(ofSize: 17,
-                                            weight: .semibold)
+        titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         
         let stackView = UIStackView(arrangedSubviews: [backButton, titleLabel])
         stackView.axis = .horizontal

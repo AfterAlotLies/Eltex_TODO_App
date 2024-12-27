@@ -7,17 +7,28 @@
 
 import UIKit
 
+// MARK: - NotesListView
 final class NotesListView: UIView {
     
     private enum Constants {
-        static let searchBarBackgroundColor: UIColor = UIColor(red: 16.0 / 255.0, green: 45.0 / 255.0, blue: 83.0 / 255.0, alpha: 0.8)
-        static let addNoteBackgroundColor: UIColor = UIColor(red: 99.0 / 255.0, green: 217.0 / 255.0 , blue: 243.0 / 255.0, alpha: 1)
+        static let searchBarBackgroundColor: UIColor = UIColor(red: 16/255,
+                                                               green: 45/255,
+                                                               blue: 83/255,
+                                                               alpha: 0.8)
+        static let addNoteBackgroundColor: UIColor = UIColor(red: 99/255,
+                                                             green: 217/255,
+                                                             blue: 243/255,
+                                                             alpha: 1)
+        static let searchBarPlaceholder = "Search by task title"
+        static let searchBarImage = UIImageView(image: UIImage(named: "searchImage"))
+        static let addNoteButtonImage = UIImage(named: "addNoteImage")
+        static let viewForHeaderTitle = "Tasks List"
     }
     
     private lazy var searchBar: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Search by task title"
+        textField.placeholder = Constants.searchBarPlaceholder
         
         let placeholderColor = UIColor.lightGray
         if let placeholder = textField.placeholder {
@@ -27,11 +38,13 @@ final class NotesListView: UIView {
             textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: attributes)
         }
         
-        let imageView = UIImageView(image: UIImage(named: "searchImage"))
+        let imageView = Constants.searchBarImage
         imageView.contentMode = .scaleAspectFit
         
-        let imageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-        imageView.frame = CGRect(x: 10, y: 0, width: 20, height: 20)
+        let imageContainer = UIView(frame: CGRect(x: 0, y: 0,
+                                                  width: 40, height: 20))
+        imageView.frame = CGRect(x: 10, y: 0,
+                                 width: 20, height: 20)
         imageContainer.addSubview(imageView)
         
         textField.rightView = imageContainer
@@ -43,7 +56,8 @@ final class NotesListView: UIView {
         textField.layer.cornerRadius = 10
         
         textField.leftViewMode = .always
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0,
+                                               width: 20, height: 20))
         textField.leftView = paddingView
         
         return textField
@@ -56,27 +70,31 @@ final class NotesListView: UIView {
         tableView.dataSource = self
         tableView.delegate  = self
         tableView.showsVerticalScrollIndicator = false
-        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: NotesTableViewCell.identifier)
+        tableView.register(NotesTableViewCell.self,
+                           forCellReuseIdentifier: NotesTableViewCell.identifier)
         return tableView
     }()
     
     private lazy var addNoteButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "addNoteImage"), for: .normal)
+        button.setImage(Constants.addNoteButtonImage, for: .normal)
         button.tintColor = .white
         button.backgroundColor = Constants.addNoteBackgroundColor
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowOpacity = 0.5
         button.layer.shadowRadius = 10
-        button.addTarget(self, action: #selector(addNewNoteButtonAction), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(addNewNoteButtonAction),
+                         for: .touchUpInside)
         return button
     }()
     
     private let viewModel: NoteListViewModel
     private var noteModel: [Note]?
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: NoteListViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -93,12 +111,14 @@ final class NotesListView: UIView {
         addNoteButton.layer.cornerRadius = addNoteButton.bounds.size.height / 2
     }
     
+    // MARK: - Public Methods
     func setNoteModel(_ note: [Note]) {
         noteModel = note
         listTableView.reloadData()
     }
 }
 
+// MARK: - NotesListView + UITableViewDataSource
 extension NotesListView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -123,6 +143,7 @@ extension NotesListView: UITableViewDataSource {
     }
 }
 
+// MARK: - NotesListView + UITableViewDelegate
 extension NotesListView: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -130,7 +151,7 @@ extension NotesListView: UITableViewDelegate {
         headerView.backgroundColor = .clear
         
         let titleLabel = UILabel()
-        titleLabel.text = "Tasks List"
+        titleLabel.text = Constants.viewForHeaderTitle
         titleLabel.font = .boldSystemFont(ofSize: 16)
         titleLabel.textColor = .white
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -152,16 +173,13 @@ extension NotesListView: UITableViewDelegate {
     }
 }
 
+// MARK: - Private Methods
 private extension NotesListView {
     
     @objc
     func addNewNoteButtonAction() {
         viewModel.showAddNewNote()
     }
-    
-}
-
-private extension NotesListView {
     
     func setupView() {
         backgroundColor = .clear

@@ -7,17 +7,39 @@
 
 import UIKit
 
+// MARK: - NewNoteView
 final class NewNoteView: UIView {
     
     private enum Constants {
-        static let uiBackgroundColor: UIColor = UIColor(red: 5.0 / 255.0, green: 36.0 / 255.0, blue: 62.0 / 255.0, alpha: 1.0)
-        static let buttonBorderColor: UIColor = UIColor(red: 14.0 / 255.0, green: 165.0 / 255.0, blue: 233.0 / 255.0, alpha: 1)
+        static let uiBackgroundColor: UIColor = UIColor(red: 5/255,
+                                                        green: 36/255,
+                                                        blue: 62/255,
+                                                        alpha: 1.0)
+        static let buttonBorderColor: UIColor = UIColor(red: 14/255,
+                                                        green: 165/255,
+                                                        blue: 233/255,
+                                                        alpha: 1)
+        
+        static let taskTextFieldPlaceholder = "task"
+        static let taskTextFieldImage = UIImageView(image: UIImage(named: "taskCheckImage"))
+        static let descriptionTextFieldImage = UIImageView(image: UIImage(named: "descriptionTaskImage"))
+        static let dateTextFieldPlaceholder = "Date"
+        static let dateTextFieldImage = UIImageView(image: UIImage(named: "dateTaskImage"))
+        static let timeTextFieldPlaceholder = "Time"
+        static let timeTextFieldImage = UIImageView(image: UIImage(named: "timeTaskImage"))
+        static let cancelButtonTitle = "cancel"
+        static let createButtonTitle = "create"
+        static let saveButtonTitle = "save"
+        
+        static let topAnchor: CGFloat = 16
+        static let leadingAnchor: CGFloat = 16
+        static let trailingAnchor: CGFloat = -16
     }
     
     private lazy var taskTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "task"
+        textField.placeholder = Constants.taskTextFieldPlaceholder
         textField.textColor = .lightGray
         
         let placeholderColor = UIColor.lightGray
@@ -28,11 +50,13 @@ final class NewNoteView: UIView {
             textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: attributes)
         }
         
-        let imageView = UIImageView(image: UIImage(named: "taskCheckImage"))
+        let imageView = Constants.taskTextFieldImage
         imageView.contentMode = .scaleAspectFit
         
-        let imageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-        imageView.frame = CGRect(x: 10, y: 0, width: 20, height: 20)
+        let imageContainer = UIView(frame: CGRect(x: 0, y: 0,
+                                                  width: 40, height: 20))
+        imageView.frame = CGRect(x: 10, y: 0,
+                                 width: 20, height: 20)
         imageContainer.addSubview(imageView)
         
         textField.leftView = imageContainer
@@ -49,16 +73,18 @@ final class NewNoteView: UIView {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.backgroundColor = Constants.uiBackgroundColor
         
-        let imageView = UIImageView(image: UIImage(named: "descriptionTaskImage"))
+        let imageView = Constants.descriptionTextFieldImage
         imageView.contentMode = .scaleAspectFit
         
-        imageView.frame = CGRect(x: 10, y: 10, width: 20, height: 20)
+        imageView.frame = CGRect(x: 10, y: 10,
+                                 width: 20, height: 20)
         textView.addSubview(imageView)
         
         textView.layer.cornerRadius = 5
         textView.textColor = .lightGray
         textView.font = UIFont.systemFont(ofSize: 18)
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 50, bottom: 10, right: 10)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 50,
+                                                   bottom: 10, right: 10)
         
         return textView
     }()
@@ -69,7 +95,9 @@ final class NewNoteView: UIView {
         if #available(iOS 13.4, *) {
             picker.preferredDatePickerStyle = .wheels
         }
-        picker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
+        picker.addTarget(self,
+                         action: #selector(dateChanged),
+                         for: .valueChanged)
         return picker
     }()
     
@@ -79,14 +107,16 @@ final class NewNoteView: UIView {
         if #available(iOS 13.4, *) {
             picker.preferredDatePickerStyle = .wheels
         }
-        picker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
+        picker.addTarget(self,
+                         action: #selector(timeChanged),
+                         for: .valueChanged)
         return picker
     }()
     
     private lazy var dateTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Date"
+        textField.placeholder = Constants.dateTextFieldPlaceholder
         textField.textColor = .lightGray
         
         let placeholderColor = UIColor.lightGray
@@ -103,10 +133,12 @@ final class NewNoteView: UIView {
         
         textField.inputView = datePicker
         
-        let imageView = UIImageView(image: UIImage(named: "dateTaskImage"))
+        let imageView = Constants.dateTextFieldImage
         imageView.contentMode = .scaleAspectFit
-        let imageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-        imageView.frame = CGRect(x: 10, y: 0, width: 20, height: 20)
+        let imageContainer = UIView(frame: CGRect(x: 0, y: 0,
+                                                  width: 40, height: 20))
+        imageView.frame = CGRect(x: 10, y: 0,
+                                 width: 20, height: 20)
         imageContainer.addSubview(imageView)
         textField.leftView = imageContainer
         textField.leftViewMode = .always
@@ -117,7 +149,7 @@ final class NewNoteView: UIView {
     private lazy var timeTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Time"
+        textField.placeholder = Constants.timeTextFieldPlaceholder
         textField.textColor = .lightGray
         
         let placeholderColor = UIColor.lightGray
@@ -134,10 +166,12 @@ final class NewNoteView: UIView {
         
         textField.inputView = timePicker
         
-        let imageView = UIImageView(image: UIImage(named: "timeTaskImage"))
+        let imageView = Constants.timeTextFieldImage
         imageView.contentMode = .scaleAspectFit
-        let imageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-        imageView.frame = CGRect(x: 10, y: 0, width: 20, height: 20)
+        let imageContainer = UIView(frame: CGRect(x: 0, y: 0,
+                                                  width: 40, height: 20))
+        imageView.frame = CGRect(x: 10, y: 0,
+                                 width: 20, height: 20)
         imageContainer.addSubview(imageView)
         textField.leftView = imageContainer
         textField.leftViewMode = .always
@@ -148,26 +182,31 @@ final class NewNoteView: UIView {
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("cancel", for: .normal)
+        button.setTitle(Constants.cancelButtonTitle, for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.backgroundColor = .white
         button.layer.cornerRadius = 10
         button.layer.borderWidth = 1
         button.layer.borderColor = Constants.buttonBorderColor.cgColor
-        button.addTarget(self, action: #selector(cancelCreatingNewNote), for: .touchUpInside)
+        
+        button.addTarget(self,
+                         action: #selector(cancelCreatingNewNote),
+                         for: .touchUpInside)
         return button
     }()
     
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("create", for: .normal)
+        button.setTitle(Constants.createButtonTitle, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = Constants.buttonBorderColor
         button.layer.cornerRadius = 10
         button.layer.borderWidth = 1
         button.layer.borderColor = Constants.buttonBorderColor.cgColor
-        button.addTarget(self, action: #selector(createNewNote), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(createNewNote),
+                         for: .touchUpInside)
         return button
     }()
     
@@ -187,6 +226,7 @@ final class NewNoteView: UIView {
     private var bottomConstraint: NSLayoutConstraint!
     private var editingNote: Note?
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: NewNoteViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -199,13 +239,14 @@ final class NewNoteView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Public Methods
     func setEditingNoteData(_ data: Note) {
         editingNote = data
         setupFields()
     }
-    
 }
 
+// MARK: - Private Methods
 private extension NewNoteView {
     
     func setupDefaultDate() {
@@ -216,7 +257,7 @@ private extension NewNoteView {
         
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
-        timeTextField.text = timeFormatter.string(from: Date()) 
+        timeTextField.text = timeFormatter.string(from: Date())
         timePicker.date = Date()
     }
     
@@ -226,7 +267,7 @@ private extension NewNoteView {
         descriptionTaskTextView.text = note.noteDescription
         dateTextField.text = note.noteDate
         timeTextField.text = note.noteTime
-        createButton.setTitle("save", for: .normal)
+        createButton.setTitle(Constants.saveButtonTitle, for: .normal)
     }
     
     func setupKeyboardObservers() {
@@ -313,10 +354,6 @@ private extension NewNoteView {
         timeTextField.text = formatter.string(from: sender.date)
     }
     
-}
-
-private extension NewNoteView {
-    
     func setupView() {
         addSubview(containerView)
         
@@ -336,7 +373,7 @@ private extension NewNoteView {
         NSLayoutConstraint.activate([
             containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
             containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -0),
-            containerView.topAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.topAnchor, constant: 16),
+            containerView.topAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.topAnchor, constant: Constants.topAnchor),
             containerView.heightAnchor.constraint(equalToConstant: 444)
         ])
         
@@ -344,44 +381,44 @@ private extension NewNoteView {
         bottomConstraint.isActive = true
         
         NSLayoutConstraint.activate([
-            taskTextField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
-            taskTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            taskTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            taskTextField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: Constants.topAnchor),
+            taskTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Constants.leadingAnchor),
+            taskTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: Constants.trailingAnchor),
             taskTextField.heightAnchor.constraint(equalToConstant: 44)
         ])
         
         NSLayoutConstraint.activate([
-            descriptionTaskTextView.topAnchor.constraint(equalTo: taskTextField.bottomAnchor, constant: 16),
-            descriptionTaskTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            descriptionTaskTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            descriptionTaskTextView.topAnchor.constraint(equalTo: taskTextField.bottomAnchor, constant: Constants.topAnchor),
+            descriptionTaskTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Constants.leadingAnchor),
+            descriptionTaskTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: Constants.trailingAnchor),
             descriptionTaskTextView.heightAnchor.constraint(equalToConstant: 200)
         ])
         
         NSLayoutConstraint.activate([
-            dateTextField.topAnchor.constraint(equalTo: descriptionTaskTextView.bottomAnchor, constant: 16),
-            dateTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            dateTextField.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -16),
+            dateTextField.topAnchor.constraint(equalTo: descriptionTaskTextView.bottomAnchor, constant: Constants.topAnchor),
+            dateTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            dateTextField.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: Constants.trailingAnchor),
             dateTextField.heightAnchor.constraint(equalToConstant: 44)
         ])
         
         NSLayoutConstraint.activate([
-            timeTextField.topAnchor.constraint(equalTo: descriptionTaskTextView.bottomAnchor, constant: 16),
-            timeTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            timeTextField.topAnchor.constraint(equalTo: descriptionTaskTextView.bottomAnchor, constant: Constants.topAnchor),
+            timeTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor),
             timeTextField.heightAnchor.constraint(equalToConstant: 44),
-            timeTextField.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 16)
+            timeTextField.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: Constants.leadingAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            cancelButton.topAnchor.constraint(equalTo: dateTextField.bottomAnchor, constant: 16),
-            cancelButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -16),
+            cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Constants.leadingAnchor),
+            cancelButton.topAnchor.constraint(equalTo: dateTextField.bottomAnchor, constant: Constants.topAnchor),
+            cancelButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: Constants.trailingAnchor),
             cancelButton.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
-            createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            createButton.topAnchor.constraint(equalTo: timeTextField.bottomAnchor, constant: 16),
-            createButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 16),
+            createButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: Constants.trailingAnchor),
+            createButton.topAnchor.constraint(equalTo: timeTextField.bottomAnchor, constant: Constants.topAnchor),
+            createButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: Constants.leadingAnchor),
             createButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }

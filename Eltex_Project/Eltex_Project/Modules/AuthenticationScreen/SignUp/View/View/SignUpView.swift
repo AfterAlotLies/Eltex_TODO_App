@@ -43,8 +43,7 @@ final class SignUpView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = Constants.welcomeLabelText
-        label.font = .systemFont(ofSize: 25,
-                                 weight: .bold)
+        label.font = .systemFont(ofSize: 25, weight: .bold)
         label.textColor = .white
         label.textAlignment = .left
         return label
@@ -77,8 +76,7 @@ final class SignUpView: UIView {
                         for: .normal)
         button.setTitleColor(.white,
                              for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 18,
-                                              weight: .bold)
+        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.clear.cgColor
@@ -96,8 +94,7 @@ final class SignUpView: UIView {
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14,
-                                 weight: .semibold)
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .white
         label.textAlignment = .center
         label.text = Constants.messageLabelText
@@ -107,10 +104,9 @@ final class SignUpView: UIView {
     private lazy var signInMessageButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(Constants.signInButtonTitle,
-                        for: .normal)
-        button.setTitleColor(Constants.signUpButtonTextColor,
-                             for: .normal)
+        button.setTitle(Constants.signInButtonTitle, for: .normal)
+        button.setTitleColor(Constants.signUpButtonTextColor, for: .normal)
+        
         button.addTarget(self,
                          action: #selector(signInHandler),
                          for: .touchUpInside)
@@ -165,6 +161,7 @@ private extension SignUpView {
                                                   width: 40, height: 20))
         imageView.frame = CGRect(x: 10, y: 0,
                                  width: 20, height: 20)
+        
         imageContainer.addSubview(imageView)
         
         textField.leftView = imageContainer

@@ -90,7 +90,7 @@ private extension NoteListViewModel {
             if !leftIsPast && rightIsPast {
                 return false
             }
-            return leftDate < rightDate
+            return leftDate > rightDate
         }
         
         fetchedUserNotes = sortedNotes.map { $0.0 }

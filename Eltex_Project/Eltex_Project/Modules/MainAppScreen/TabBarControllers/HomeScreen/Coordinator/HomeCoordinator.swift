@@ -37,10 +37,6 @@ final class HomeCoordinator: Coordinator {
     func start() {
         setupHomeViewController()
     }
-    
-    deinit {
-        print("home deinited coorditanor")
-    }
 }
 
 // MARK: - HomeCoordinator + HomeCoordinatorProtocol
@@ -61,13 +57,16 @@ extension HomeCoordinator: HomeCoordinatorProtocol {
     }
     
     func showDetailNote(with note: Note) {
-        let coordinator = DetailNoteCoordinator(navigationController: navigationController, notesRepository: notesRepository, note: note)
+        let coordinator = DetailNoteCoordinator(navigationController: navigationController,
+                                                notesRepository: notesRepository,
+                                                note: note)
         coordinator.delegate = self
         childrenCoordinator.append(coordinator)
         coordinator.start()
     }
 }
 
+// MARK: - HomeCoordinator + DetailNoteCoordinatorDelegate
 extension HomeCoordinator: DetailNoteCoordinatorDelegate {
     func detailNoteCoordinatorDidFinish(_ coordinator: DetailNoteCoordinator) {
         childrenCoordinator.removeAll { $0.type == .detail }

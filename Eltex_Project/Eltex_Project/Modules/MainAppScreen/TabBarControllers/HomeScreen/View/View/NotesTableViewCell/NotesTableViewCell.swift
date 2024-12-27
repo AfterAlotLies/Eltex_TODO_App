@@ -6,10 +6,14 @@
 //
 
 import UIKit
-import Combine
 
 // MARK: - NotesTableViewCell
 final class NotesTableViewCell: UITableViewCell {
+    
+    private enum Constants {
+        static let cellInfoImage = UIImage(named: "cellInfoImage")
+        static let completedTaskImage = UIImage(named: "completedTask")
+    }
     
     static let identifier: String = String(describing: NotesTableViewCell.self)
     
@@ -52,7 +56,7 @@ final class NotesTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "cellInfoImage")
+        imageView.image = Constants.cellInfoImage
         return imageView
     }()
     
@@ -77,8 +81,6 @@ final class NotesTableViewCell: UITableViewCell {
         stackView.alignment = .center
         return stackView
     }()
-    
-    private var subscriptions: Set<AnyCancellable> = []
 
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -105,7 +107,7 @@ final class NotesTableViewCell: UITableViewCell {
         if isCompleted {
             completedTaskImageView.isHidden = false
             contentStackView.insertArrangedSubview(completedTaskImageView, at: 0)
-            completedTaskImageView.image = UIImage(named: "completedTask")
+            completedTaskImageView.image = Constants.completedTaskImage
         } else {
             completedTaskImageView.isHidden = true
             contentStackView.removeArrangedSubview(completedTaskImageView)
@@ -113,6 +115,7 @@ final class NotesTableViewCell: UITableViewCell {
     }
 }
 
+// MARK: - Private Methods
 private extension NotesTableViewCell {
     
     func formatNoteDate(_ taskDate: String, _ taskTime: String) -> String {
@@ -137,10 +140,6 @@ private extension NotesTableViewCell {
             return "\(taskDate) | \(taskTime)"
         }
     }
-}
-
-// MARK: - Setup Cell + Setup Constraints
-private extension NotesTableViewCell {
     
     func setupCell() {
         contentView.addSubview(contentViewCell)

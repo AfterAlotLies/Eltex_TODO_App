@@ -8,11 +8,13 @@
 import Combine
 import CoreData
 
+// MARK: - UserNotesServiceErrors
 enum UserNotesServiceErrors: Error {
     case userNotFound
     case failedToSave
 }
 
+// MARK: - UserNotesService
 final class UserNotesService {
     private let entityName: String = "UserNotesEntity"
     
@@ -29,7 +31,7 @@ final class UserNotesService {
     private var context: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
-
+    
     // MARK: - Add New Note for User
     func addNewNoteForUser(by userId: UUID, noteData: Note) -> AnyPublisher<Bool, Never> {
         Future { promise in
@@ -55,7 +57,6 @@ final class UserNotesService {
                     promise(.success(false))
                 }
             } catch {
-                print("Failed to add note: \(error.localizedDescription)")
                 promise(.success(false))
             }
         }
@@ -78,6 +79,7 @@ final class UserNotesService {
         .eraseToAnyPublisher()
     }
     
+    // MARK: - Delete Note For User by ID
     func deleteNote(for userId: UUID, by noteId: UUID) -> AnyPublisher<Bool, Never> {
         Future { promise in
             let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
@@ -92,21 +94,18 @@ final class UserNotesService {
                 if let noteToDelete = user.ofNotesEntity?.first(where: { ($0 as? UserNotesEntity)?.id == noteId }) as? UserNotesEntity {
                     self.context.delete(noteToDelete)
                     try self.context.save()
-                    print("Заметка успешно удалена.")
                     promise(.success(true))
                 } else {
-                    print("Заметка не найдена.")
                     promise(.success(false))
                 }
             } catch {
-                print("Ошибка при удалении заметки: \(error.localizedDescription)")
                 promise(.success(false))
             }
         }
         .eraseToAnyPublisher()
-        
     }
     
+    // MARK: - Mark Not as Completed
     func markNoteAsCompleted(for userId: UUID, by noteId: UUID) -> AnyPublisher<Bool, Never> {
         Future { promise in
             let fetchRequest: NSFetchRequest<UserNotesEntity> = UserNotesEntity.fetchRequest()
@@ -130,7 +129,8 @@ final class UserNotesService {
         }
         .eraseToAnyPublisher()
     }
-
+    
+    // MARK: - Update Note For User by ID
     func updateNoteForUser(by userId: UUID, noteId: UUID, updatedNoteData: Note) -> AnyPublisher<Bool, Never> {
         Future { promise in
             let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()

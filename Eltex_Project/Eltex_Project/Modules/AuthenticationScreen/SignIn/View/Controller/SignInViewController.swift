@@ -44,7 +44,7 @@ final class SignInViewController: UIViewController {
     }
 }
 
-// MARK: - Private methods
+// MARK: - Private Methods
 private extension SignInViewController {
     
     func setupBindings() {

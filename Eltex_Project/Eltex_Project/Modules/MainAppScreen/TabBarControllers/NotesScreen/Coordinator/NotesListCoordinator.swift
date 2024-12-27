@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 
+// MARK: - NotesListCoordinatorProtocol
 protocol NotesListCoordinatorProtocol {
     func showNoteList()
     func showAddNote()
@@ -30,16 +31,13 @@ final class NotesListCoordinator: Coordinator {
         self.notesRepository = notesRepository
     }
     
+    // MARK: - Start
     func start() {
         showNoteList()
     }
-    
-    deinit {
-        print("noteslist deinited coorditanor")
-    }
-    
 }
 
+// MARK: - NotesListCoordinator + NotesListCoordinatorProtocol
 extension NotesListCoordinator: NotesListCoordinatorProtocol {
     
     func showNoteList() {
@@ -79,52 +77,18 @@ extension NotesListCoordinator: NotesListCoordinatorProtocol {
     }
     
     func showDetails(for note: Note) {
-        let coordinator = DetailNoteCoordinator(navigationController: navigationController, notesRepository: notesRepository, note: note)
+        let coordinator = DetailNoteCoordinator(navigationController: navigationController,
+                                                notesRepository: notesRepository,
+                                                note: note)
         coordinator.delegate = self
         childrenCoordinator.append(coordinator)
         coordinator.start()
     }
 }
 
+// MARK: - NotesListCoordinator + DetailNoteCoordinatorDelegate
 extension NotesListCoordinator: DetailNoteCoordinatorDelegate {
     func detailNoteCoordinatorDidFinish(_ coordinator: DetailNoteCoordinator) {
         childrenCoordinator.removeAll { $0.type == .detail }
-    }
-}
-
-private extension NotesListCoordinator {
-    
-    func setupNavigationBar(for vc: UIViewController) {
-        vc.navigationItem.hidesBackButton = true
-        
-        let backButton = UIButton(type: .system)
-        backButton.setImage(UIImage(named: "backButtonImage"),
-                            for: .normal)
-        backButton.tintColor =  UIColor(red: 99.0 / 255.0,
-                                        green: 217.0 / 255.0,
-                                        blue: 243.0 / 255.0,
-                                        alpha: 1)
-        backButton.addTarget(self,
-                             action: #selector(backButtonTapped),
-                             for: .touchUpInside)
-        
-        let titleLabel = UILabel()
-        titleLabel.text = "Task Details"
-        titleLabel.textColor = .white
-        titleLabel.font = UIFont.systemFont(ofSize: 17,
-                                            weight: .semibold)
-        
-        let stackView = UIStackView(arrangedSubviews: [backButton, titleLabel])
-        stackView.axis = .horizontal
-        stackView.spacing = 15
-        stackView.alignment = .center
-        
-        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: stackView)
-    }
-    
-    @objc
-    func backButtonTapped() {
-        navigationController.popViewController(animated: true)
-        navigationController.setNavigationBarHidden(true, animated: false)
     }
 }

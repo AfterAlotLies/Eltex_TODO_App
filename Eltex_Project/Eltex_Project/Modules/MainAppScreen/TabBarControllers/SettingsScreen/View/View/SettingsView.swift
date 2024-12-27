@@ -7,11 +7,18 @@
 
 import UIKit
 
+// MARK: - SettingsViewDelegate
 protocol SettingsViewDelegate: AnyObject {
     func logoutButtonTapped()
 }
 
+// MARK: - SettingsView
 final class SettingsView: UIView {
+    
+    private enum Constants {
+        static let logoutButtonImage = UIImage(named: "logoutImage")
+        static let logoutButtonTitle = "Logout"
+    }
     
     private lazy var settingsTableView: UITableView = {
         let tableView = UITableView()
@@ -26,8 +33,8 @@ final class SettingsView: UIView {
     
     private lazy var logOutButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
-        configuration.image = UIImage(named: "logoutImage")
-        configuration.title = "Log Out"
+        configuration.image = Constants.logoutButtonImage
+        configuration.title = Constants.logoutButtonTitle
         
         configuration.baseBackgroundColor = .white
         configuration.baseForegroundColor = .red
@@ -52,6 +59,7 @@ final class SettingsView: UIView {
     
     weak var delegate: SettingsViewDelegate?
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: SettingsViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -63,13 +71,14 @@ final class SettingsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Public Methods
     func setSettingsData(_ data: [Settings]) {
         settingsModel = data
         settingsTableView.reloadData()
     }
 }
 
-
+// MARK: - SettingsView + UITableViewDataSource
 extension SettingsView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -91,6 +100,7 @@ extension SettingsView: UITableViewDataSource {
     }
 }
 
+// MARK: - Private methods
 private extension SettingsView {
     
     @objc

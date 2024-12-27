@@ -8,10 +8,16 @@
 import UIKit
 import Combine
 
+// MARK: - CalendarViewController
 final class CalendarViewController: UIViewController {
     
+    private enum Constants {
+        static let contollerTitle = "Calendar"
+    }
+    
     private lazy var calendarView: CalendarView = {
-        let view = CalendarView(frame: .zero, viewModel: viewModel)
+        let view = CalendarView(frame: .zero,
+                                viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -19,6 +25,7 @@ final class CalendarViewController: UIViewController {
     private let viewModel: CalendarViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(viewModel: CalendarViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -36,6 +43,7 @@ final class CalendarViewController: UIViewController {
     }
 }
 
+// MARK: - Private Methods
 private extension CalendarViewController {
     
     func setupBindings() {
@@ -47,19 +55,31 @@ private extension CalendarViewController {
                 }
             }
             .store(in: &subscriptions)
+        
+        viewModel.$userNotes
+            .sink { [weak self] userNotes in
+                guard let self = self else { return }
+                self.calendarView.setUserNotes(userNotes)
+            }
+            .store(in: &subscriptions)
     }
     
-    func setupController() {
-        view.addSubview(calendarView)
+    func setupNavBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
         
         let titleLabel = UILabel()
-        titleLabel.text = "Calendar"
-        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        titleLabel.text = Constants.contollerTitle
+        titleLabel.font = UIFont.systemFont(ofSize: 18,
+                                            weight: .semibold)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         
         navigationItem.titleView = titleLabel
+    }
+    
+    func setupController() {
+        view.addSubview(calendarView)
+        setupNavBar()
         setupConstraints()
     }
     

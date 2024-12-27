@@ -8,17 +8,19 @@
 import UIKit
 import Combine
 
+// MARK: - CalendarCoordinatorProtocol
 protocol CalendarCoordinatorProtocol {
     func showCalendar()
     func showDetails(for note: Note)
 }
 
+// MARK: - CalendarCoordinator + Coordinator
 final class CalendarCoordinator: Coordinator {
     var childrenCoordinator: [Coordinator] = []
     
     var navigationController: UINavigationController
     
-    var type: CoordinatorType {.calendar}
+    var type: CoordinatorType { .calendar }
     
     private let notesRepository: NotesRepository
     private var subscriptions: Set<AnyCancellable> = []
@@ -28,15 +30,13 @@ final class CalendarCoordinator: Coordinator {
         self.notesRepository = notesRepository
     }
     
+    // MARK: - Start
     func start() {
         showCalendar()
     }
-    
-    deinit {
-        print("calendar deinited coorditanor")
-    }
 }
 
+// MARK: - CalendarCoordinator + CalendarCoordinatorProtocol
 extension CalendarCoordinator: CalendarCoordinatorProtocol {
     
     func showCalendar() {
@@ -62,6 +62,7 @@ extension CalendarCoordinator: CalendarCoordinatorProtocol {
     }
 }
 
+// MARK: - CalendarCoordinator + DetailNoteCoordinatorDelegate
 extension CalendarCoordinator: DetailNoteCoordinatorDelegate {
     func detailNoteCoordinatorDidFinish(_ coordinator: DetailNoteCoordinator) {
         childrenCoordinator.removeAll { $0.type == .detail }

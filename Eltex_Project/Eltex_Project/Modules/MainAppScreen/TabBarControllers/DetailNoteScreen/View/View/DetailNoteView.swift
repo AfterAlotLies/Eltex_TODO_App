@@ -7,10 +7,25 @@
 
 import UIKit
 
+// MARK: - DetailNoteView
 final class DetailNoteView: UIView {
     
     private enum Constants {
-        static let buttonsBackgroundColor: UIColor = UIColor(red: 5.0 / 255.0, green: 36.0 / 255.0, blue: 62.0 / 255.0, alpha: 1)
+        static let buttonsBackgroundColor: UIColor = UIColor(red: 5/255,
+                                                             green: 36/255,
+                                                             blue: 62/255,
+                                                             alpha: 1)
+        
+        static let completedButtonImageTask = UIImage(named: "completedTask")
+        static let doneButtonTitle = "Done"
+        static let deleteButtonImage = UIImage(named: "deleteNoteImage")
+        static let deleteButtonTitle = "Delete"
+        static let widthAnchor: CGFloat = 88
+        static let heightAnchor: CGFloat = 71
+        static let topAnchor26: CGFloat = 26
+        static let topAnchor16: CGFloat = 16
+        static let leadingAnchor: CGFloat = 16
+        static let trailingAnchor: CGFloat = -16
     }
     
     private lazy var noteNameLabel: UILabel = {
@@ -34,7 +49,7 @@ final class DetailNoteView: UIView {
         label.textAlignment = .left
         return label
     }()
-        
+    
     private lazy var noteTimeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -66,11 +81,11 @@ final class DetailNoteView: UIView {
         configuration.baseBackgroundColor = Constants.buttonsBackgroundColor
         configuration.cornerStyle = .medium
         
-        configuration.image = UIImage(named: "completedTask")
+        configuration.image = Constants.completedButtonImageTask
         configuration.imagePadding = 10
         configuration.imagePlacement = .top
         
-        configuration.title = "Done"
+        configuration.title = Constants.doneButtonTitle
         configuration.baseForegroundColor = .white
         configuration.attributedTitle?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         
@@ -82,7 +97,9 @@ final class DetailNoteView: UIView {
         button.layer.shadowOpacity = 0.6
         button.layer.shadowRadius = 5
         
-        button.addTarget(self, action: #selector(markNoteAsDone), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(markNoteAsDone),
+                         for: .touchUpInside)
         
         return button
     }()
@@ -93,11 +110,11 @@ final class DetailNoteView: UIView {
         configuration.baseBackgroundColor = Constants.buttonsBackgroundColor
         configuration.cornerStyle = .medium
         
-        configuration.image = UIImage(named: "deleteNoteImage")
+        configuration.image = Constants.deleteButtonImage
         configuration.imagePadding = 10
         configuration.imagePlacement = .top
         
-        configuration.title = "Delete"
+        configuration.title = Constants.deleteButtonTitle
         configuration.baseForegroundColor = .white
         configuration.attributedTitle?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         
@@ -109,7 +126,9 @@ final class DetailNoteView: UIView {
         button.layer.shadowOpacity = 0.6
         button.layer.shadowRadius = 5
         
-        button.addTarget(self, action: #selector(deleteNote), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(deleteNote),
+                         for: .touchUpInside)
         
         return button
     }()
@@ -117,6 +136,7 @@ final class DetailNoteView: UIView {
     private let viewModel: DetailNoteViewModel
     private var noteData: Note?
     
+    // MARK: - Lifecycle
     init(frame: CGRect, viewModel: DetailNoteViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -128,6 +148,7 @@ final class DetailNoteView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Public Methods
     func setUserNoteData(_ userNoteData: Note) {
         noteData = userNoteData
         noteNameLabel.text = userNoteData.noteName
@@ -139,6 +160,7 @@ final class DetailNoteView: UIView {
     }
 }
 
+// MARK: - Private Methods
 private extension DetailNoteView {
     
     @objc
@@ -170,9 +192,9 @@ private extension DetailNoteView {
         if isCompleted {
             addSubview(deleteNoteButton)
             NSLayoutConstraint.activate([
-                deleteNoteButton.widthAnchor.constraint(equalToConstant: 88),
-                deleteNoteButton.heightAnchor.constraint(equalToConstant: 71),
-                deleteNoteButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 26),
+                deleteNoteButton.widthAnchor.constraint(equalToConstant: Constants.widthAnchor),
+                deleteNoteButton.heightAnchor.constraint(equalToConstant: Constants.heightAnchor),
+                deleteNoteButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: Constants.topAnchor26),
                 deleteNoteButton.centerXAnchor.constraint(equalTo: self.centerXAnchor)
             ])
         } else {
@@ -180,17 +202,17 @@ private extension DetailNoteView {
             addSubview(deleteNoteButton)
             
             NSLayoutConstraint.activate([
-                doneNoteButton.widthAnchor.constraint(equalToConstant: 88),
-                doneNoteButton.heightAnchor.constraint(equalToConstant: 71),
-                doneNoteButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 26),
-                doneNoteButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -16)
+                doneNoteButton.widthAnchor.constraint(equalToConstant: Constants.widthAnchor),
+                doneNoteButton.heightAnchor.constraint(equalToConstant: Constants.heightAnchor),
+                doneNoteButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: Constants.topAnchor26),
+                doneNoteButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: Constants.trailingAnchor)
             ])
             
             NSLayoutConstraint.activate([
-                deleteNoteButton.widthAnchor.constraint(equalToConstant: 88),
-                deleteNoteButton.heightAnchor.constraint(equalToConstant: 71),
-                deleteNoteButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 26),
-                deleteNoteButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 16)
+                deleteNoteButton.widthAnchor.constraint(equalToConstant: Constants.widthAnchor),
+                deleteNoteButton.heightAnchor.constraint(equalToConstant: Constants.heightAnchor),
+                deleteNoteButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: Constants.topAnchor26),
+                deleteNoteButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: Constants.leadingAnchor)
             ])
         }
     }
@@ -212,14 +234,15 @@ private extension DetailNoteView {
     
     func setupImageInteractionEnabledTrue() {
         noteNameImageView.isUserInteractionEnabled = true
-        let editNote = UITapGestureRecognizer(target: self, action: #selector(editNote))
+        let editNote = UITapGestureRecognizer(target: self,
+                                              action: #selector(editNote))
         noteNameImageView.addGestureRecognizer(editNote)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            noteNameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
-            noteNameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            noteNameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: Constants.topAnchor16),
+            noteNameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
             noteNameLabel.trailingAnchor.constraint(equalTo: noteNameImageView.leadingAnchor, constant: -4)
         ])
         
@@ -233,7 +256,7 @@ private extension DetailNoteView {
             calendarImageView.heightAnchor.constraint(equalToConstant: 11),
             calendarImageView.widthAnchor.constraint(equalToConstant: 11),
             calendarImageView.topAnchor.constraint(equalTo: noteNameLabel.bottomAnchor, constant: 8),
-            calendarImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16)
+            calendarImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor)
         ])
         
         NSLayoutConstraint.activate([
@@ -255,18 +278,16 @@ private extension DetailNoteView {
         
         NSLayoutConstraint.activate([
             dividerView.heightAnchor.constraint(equalToConstant: 1),
-            dividerView.topAnchor.constraint(equalTo: noteTimeLabel.bottomAnchor, constant: 16),
-            dividerView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            dividerView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            dividerView.topAnchor.constraint(equalTo: noteTimeLabel.bottomAnchor, constant: Constants.topAnchor16),
+            dividerView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            dividerView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor)
         ])
         
         NSLayoutConstraint.activate([
             descriptionTextView.heightAnchor.constraint(equalToConstant: 157),
-            descriptionTextView.topAnchor.constraint(equalTo: dividerView.bottomAnchor, constant: 16),
-            descriptionTextView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            descriptionTextView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            descriptionTextView.topAnchor.constraint(equalTo: dividerView.bottomAnchor, constant: Constants.topAnchor16),
+            descriptionTextView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            descriptionTextView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor)
         ])
-        
-       
     }
 }

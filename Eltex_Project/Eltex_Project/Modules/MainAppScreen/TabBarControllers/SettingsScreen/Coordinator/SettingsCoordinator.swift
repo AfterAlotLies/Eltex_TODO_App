@@ -8,10 +8,12 @@
 import UIKit
 import Combine
 
+// MARK: - SettingsCoordinatorProtocol
 protocol SettingsCoordinatorProtocol {
     func showSettings()
 }
 
+// MARK: - SettingsCoordinator + Coordinator
 final class SettingsCoordinator: Coordinator {
     
     var childrenCoordinator: [Coordinator] = []
@@ -27,15 +29,13 @@ final class SettingsCoordinator: Coordinator {
         self.navigationController = navigationController
     }
     
+    // MARK: - Start
     func start() {
         showSettings()
     }
-    
-    deinit {
-        print("settings deinited coorditanor")
-    }
 }
 
+// MARK: - SettingsCoordinator + SettingsCoordinatorProtocol
 extension SettingsCoordinator: SettingsCoordinatorProtocol {
     
     func showSettings() {
@@ -55,6 +55,7 @@ extension SettingsCoordinator: SettingsCoordinatorProtocol {
     }
 }
 
+// MARK: - Private Methods
 private extension SettingsCoordinator {
     
     func cancelSubscriptions() {

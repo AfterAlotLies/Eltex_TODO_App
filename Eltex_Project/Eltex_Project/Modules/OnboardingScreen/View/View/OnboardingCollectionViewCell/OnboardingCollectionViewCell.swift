@@ -24,8 +24,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 20,
-                                       weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         return label
     }()
     
@@ -45,6 +44,7 @@ final class OnboardingCollectionViewCell: UICollectionViewCell {
         previewTextLabel.text = nil
     }
     
+    // MARK: - Public Methods
     func configureCell(_ imageName: String, _ title: String) {
         previewImageView.image = UIImage(named: imageName)
         previewImageView.contentMode = .scaleAspectFit

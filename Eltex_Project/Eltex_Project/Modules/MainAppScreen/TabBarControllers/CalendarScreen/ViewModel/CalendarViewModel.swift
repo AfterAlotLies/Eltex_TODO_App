@@ -10,10 +10,11 @@ import Foundation
 
 final class CalendarViewModel {
     @Published private(set) var visibleUserNote: [Note]?
+    @Published private(set) var userNotes: [Note] = []
     
-    private var userNotes: [Note] = []
     private let notesRepository: NotesRepository
     private var subscriptions: Set<AnyCancellable> = []
+    private var selectedDate: Date?
     
     let showDetailNoteAction = PassthroughSubject<Note, Never>()
     
@@ -26,7 +27,6 @@ final class CalendarViewModel {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "d MMM yyyy"
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
         
         let filteredNotes = userNotes.filter {
                 if let noteDate = dateFormatter.date(from: $0.noteDate) {
@@ -42,6 +42,10 @@ final class CalendarViewModel {
     func showDetailNote(with note: Note) {
         showDetailNoteAction.send(note)
     }
+    
+    func setSelectedDate(with date: Date) {
+        selectedDate = date
+    }
 }
 
 private extension CalendarViewModel {
@@ -51,8 +55,12 @@ private extension CalendarViewModel {
             .sink { [weak self] notes in
                 guard let self = self else { return }
                 self.userNotes = notes
-                let today = Calendar.current.startOfDay(for: Date())
-                self.filterNote(with: today)
+                if let selectedDate = self.selectedDate {
+                    self.filterNote(with: selectedDate)
+                } else {
+                    let today = Calendar.current.startOfDay(for: Date())
+                    self.filterNote(with: today)
+                }
             }
             .store(in: &subscriptions)
         
@@ -63,8 +71,12 @@ private extension CalendarViewModel {
                     return
                 }
                 self.userNotes.append(note)
-                let today = Calendar.current.startOfDay(for: Date())
-                self.filterNote(with: today)
+                if let selectedDate = self.selectedDate {
+                    self.filterNote(with: selectedDate)
+                } else {
+                    let today = Calendar.current.startOfDay(for: Date())
+                    self.filterNote(with: today)
+                }
             }
             .store(in: &subscriptions)
     }

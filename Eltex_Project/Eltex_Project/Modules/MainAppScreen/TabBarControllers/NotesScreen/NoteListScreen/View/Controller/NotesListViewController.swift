@@ -8,10 +8,12 @@
 import UIKit
 import Combine
 
+// MARK: - NotesListViewController
 final class NotesListViewController: UIViewController {
     
     private lazy var notesListView: NotesListView = {
-        let view = NotesListView(frame: .zero, viewModel: viewModel)
+        let view = NotesListView(frame: .zero,
+                                 viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -19,6 +21,7 @@ final class NotesListViewController: UIViewController {
     private let viewModel: NoteListViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(viewModel: NoteListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -36,6 +39,7 @@ final class NotesListViewController: UIViewController {
     }
 }
 
+// MARK: - Private Methods
 private extension NotesListViewController {
     
     func setupBindings() {

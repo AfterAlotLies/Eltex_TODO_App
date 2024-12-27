@@ -11,8 +11,14 @@ import Combine
 // MARK: - OnboardingView
 final class OnboardingView: UIView {
     
+    private enum Constants {
+        static let nextImageName = "nextImage"
+        static let doneImageName = "doneImage"
+    }
+    
     private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+        let collectionView = UICollectionView(frame: .zero,
+                                              collectionViewLayout: createCollectionViewLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
         
@@ -23,7 +29,8 @@ final class OnboardingView: UIView {
         collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         
-        collectionView.register(OnboardingCollectionViewCell.self, forCellWithReuseIdentifier: OnboardingCollectionViewCell.identifier)
+        collectionView.register(OnboardingCollectionViewCell.self,
+                                forCellWithReuseIdentifier: OnboardingCollectionViewCell.identifier)
         
         return collectionView
     }()
@@ -33,7 +40,7 @@ final class OnboardingView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         
         var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(named: "nextImage")
+        configuration.image = UIImage(named: Constants.nextImageName)
         button.configuration = configuration
         
         button.backgroundColor = .white
@@ -45,7 +52,9 @@ final class OnboardingView: UIView {
         button.layer.shadowOpacity = 0.6
         button.layer.shadowRadius = 5
         
-        button.addTarget(self, action: #selector(nextButtonHandler), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(nextButtonHandler),
+                         for: .touchUpInside)
         return button
     }()
     
@@ -95,7 +104,7 @@ extension OnboardingView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OnboardingCollectionViewCell.identifier, for: indexPath) as? OnboardingCollectionViewCell,
-        let model = paginationModel else {
+              let model = paginationModel else {
             return UICollectionViewCell()
         }
         
@@ -113,9 +122,9 @@ extension OnboardingView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let model = paginationModel else { return }
         if indexPath.item == model.count - 1 {
-            nextButton.setImage(UIImage(named: "doneImage"), for: .normal)
+            nextButton.setImage(UIImage(named: Constants.doneImageName), for: .normal)
         } else {
-            nextButton.setImage(UIImage(named: "nextImage"), for: .normal)
+            nextButton.setImage(UIImage(named: Constants.nextImageName), for: .normal)
         }
     }
 }
@@ -135,11 +144,12 @@ extension OnboardingView {
 extension OnboardingView: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.frame.width, height: self.frame.height / 1.5)
+        return CGSize(width: self.frame.width,
+                      height: self.frame.height / 1.5)
     }
 }
 
-// MARK: - Private methods
+// MARK: - Private Methods
 private extension OnboardingView {
     
     @objc
@@ -182,10 +192,6 @@ private extension OnboardingView {
         collectionViewLayout.scrollDirection = .horizontal
         return collectionViewLayout
     }
-}
-
-// MARK: - Setup View + Setup Constraints
-private extension OnboardingView {
     
     func setupView() {
         addSubview(collectionView)

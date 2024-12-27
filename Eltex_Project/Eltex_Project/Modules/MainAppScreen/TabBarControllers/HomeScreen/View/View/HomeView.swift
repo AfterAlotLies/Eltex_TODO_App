@@ -55,6 +55,7 @@ final class HomeView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Public Methods
     func setupUserInfo(_ email: String, _ name: String) {
         userNameLabel.text = name
         userEmailLabel.text = email
@@ -133,7 +134,7 @@ extension HomeView: UITableViewDelegate {
     }
 }
 
-// MARK: - Setup View + Setup Constraints()
+// MARK: - Private Methods
 private extension HomeView {
     
     func setupView() {

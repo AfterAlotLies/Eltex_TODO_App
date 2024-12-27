@@ -12,7 +12,8 @@ import Combine
 final class HomeViewController: UIViewController {
     
     private lazy var homeView: HomeView = {
-        let view = HomeView(frame: .zero, viewModel: viewModel)
+        let view = HomeView(frame: .zero,
+                            viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -38,7 +39,7 @@ final class HomeViewController: UIViewController {
     }
 }
 
-// MARK: - Private methods
+// MARK: - Private Methods
 private extension HomeViewController {
     
     func setupBindings() {
@@ -56,10 +57,6 @@ private extension HomeViewController {
             }
             .store(in: &subscriptions)
     }
-}
-
-// MARK: - Setup Controller + Setup Constraints
-private extension HomeViewController {
     
     func setupController() {
         view.addSubview(homeView)

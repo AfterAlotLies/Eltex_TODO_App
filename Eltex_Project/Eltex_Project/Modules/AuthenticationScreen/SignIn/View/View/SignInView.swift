@@ -19,7 +19,7 @@ final class SignInView: UIView {
                                                             green: 217/255,
                                                             blue: 243/255,
                                                             alpha: 1)
-        static let topImageName = "authTopImage"
+        static let topImage = UIImage(named: "authTopImage")
         static let welcomeBackTitle = "Welcome back to DO IT"
         static let titleLabelText = "Have an other productive day !"
         static let signInButtonTitle = "Sign In"
@@ -34,7 +34,7 @@ final class SignInView: UIView {
     private lazy var topImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: Constants.topImageName)
+        imageView.image = Constants.topImage
         return imageView
     }()
     
@@ -42,8 +42,7 @@ final class SignInView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = Constants.welcomeBackTitle
-        label.font = .systemFont(ofSize: 25,
-                                 weight: .bold)
+        label.font = .systemFont(ofSize: 25, weight: .bold)
         label.textColor = .white
         label.textAlignment = .left
         return label
@@ -68,12 +67,9 @@ final class SignInView: UIView {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        button.setTitle(Constants.signInButtonTitle,
-                        for: .normal)
-        button.setTitleColor(.white,
-                             for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 18,
-                                              weight: .bold)
+        button.setTitle(Constants.signInButtonTitle, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.clear.cgColor
@@ -91,8 +87,7 @@ final class SignInView: UIView {
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14,
-                                 weight: .semibold)
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .white
         label.textAlignment = .center
         label.text = Constants.messageLabelText
@@ -102,10 +97,9 @@ final class SignInView: UIView {
     private lazy var signUpMessageButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(Constants.signUpButtonTitle,
-                        for: .normal)
-        button.setTitleColor(Constants.signUpButtonTextColor,
-                             for: .normal)
+        button.setTitle(Constants.signUpButtonTitle, for: .normal)
+        button.setTitleColor(Constants.signUpButtonTextColor, for: .normal)
+        
         button.addTarget(self,
                          action: #selector(signUpHandler),
                          for: .touchUpInside)
@@ -159,6 +153,7 @@ private extension SignInView {
                                                   width: 40, height: 20))
         imageView.frame = CGRect(x: 10, y: 0,
                                  width: 20, height: 20)
+        
         imageContainer.addSubview(imageView)
         
         textField.leftView = imageContainer

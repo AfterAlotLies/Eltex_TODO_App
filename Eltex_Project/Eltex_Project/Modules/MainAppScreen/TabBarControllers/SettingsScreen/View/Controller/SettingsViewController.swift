@@ -8,10 +8,20 @@
 import UIKit
 import Combine
 
+// MARK: - SettingsViewController
 final class SettingsViewController: UIViewController {
     
+    private enum Constants {
+        static let alertMessage = "Are you sure wanna quit?"
+        static let alertTitle = "Quit?"
+        static let yesActionTitle = "Yes, i'm sure"
+        static let noActionTitle = "No, i'm not"
+        static let controllerTitle = "Settings"
+    }
+    
     private lazy var settingsView: SettingsView = {
-        let view = SettingsView(frame: .zero, viewModel: viewModel)
+        let view = SettingsView(frame: .zero,
+                                viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.delegate = self
         return view
@@ -20,6 +30,7 @@ final class SettingsViewController: UIViewController {
     private let viewModel: SettingsViewModel
     private var subscriptions: Set<AnyCancellable> = []
     
+    // MARK: - Lifecycle
     init(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -37,29 +48,33 @@ final class SettingsViewController: UIViewController {
     }
 }
 
+// MARK: - SettingsViewController + SettingsViewDelegate
 extension SettingsViewController: SettingsViewDelegate {
     
     func logoutButtonTapped() {
-        showAlert(message: "Are you sure wanna quit?")
+        showAlert(message: Constants.alertMessage)
     }
 }
 
+// MARK: - Private Methods
 private extension SettingsViewController {
     
     func showAlert(message: String) {
-        let alert = UIAlertController(title: "Wait", message: message, preferredStyle: .alert)
-        let yesAction = UIAlertAction(title: "Yes, i'm sure", style: .default) { [weak self] _ in
+        let alert = UIAlertController(title: Constants.alertTitle,
+                                      message: message,
+                                      preferredStyle: .alert)
+        let yesAction = UIAlertAction(title: Constants.yesActionTitle,
+                                      style: .default) { [weak self] _ in
             guard let self = self else { return }
             self.viewModel.logOut()
         }
-        let noAction = UIAlertAction(title: "No, i'm not done", style: .cancel, handler: nil)
+        let noAction = UIAlertAction(title: Constants.noActionTitle,
+                                     style: .cancel,
+                                     handler: nil)
         alert.addAction(yesAction)
         alert.addAction(noAction)
         present(alert, animated: true)
     }
-}
-
-private extension SettingsViewController {
     
     func setupBindings() {
         viewModel.$settingsData
@@ -75,7 +90,7 @@ private extension SettingsViewController {
         navigationController?.navigationBar.prefersLargeTitles = false
         
         let titleLabel = UILabel()
-        titleLabel.text = "Settings"
+        titleLabel.text = Constants.controllerTitle
         titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center

@@ -52,10 +52,6 @@ private extension OnboardingViewController {
             }
             .store(in: &subscriptions)
     }
-}
-
-// MARK: - Setup Controller + Setup Constraints
-private extension OnboardingViewController {
     
     func setupController() {
         view.backgroundColor = .clear
