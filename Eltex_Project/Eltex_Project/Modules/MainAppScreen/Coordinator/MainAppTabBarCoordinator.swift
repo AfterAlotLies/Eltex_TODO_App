@@ -74,10 +74,6 @@ final class MainAppTabBarCoordinator: Coordinator {
         navigationController.isNavigationBarHidden = true
         navigationController.setViewControllers([tabBarController], animated: true)
     }
-    
-    deinit {
-        print("tabbar deinited coorditanor")
-    }
 }
 
 // MARK: - MainAppTabBarCoordinator + MainAppTabBarCoordinatorProtocol

@@ -11,28 +11,39 @@ import UIKit
 final class SignInView: UIView {
     
     private enum Constants {
-        static let signInButtonColor: UIColor = UIColor(red: 14.0 / 255.0,
-                                                        green: 165.0 / 255.0,
-                                                        blue: 233.0 / 255.0,
+        static let signInButtonColor: UIColor = UIColor(red: 14/255,
+                                                        green: 165/255,
+                                                        blue: 233/255,
                                                         alpha: 1)
-        static let signUpButtonTextColor: UIColor = UIColor(red: 99.0 / 255.0,
-                                                            green: 217.0 / 255.0,
-                                                            blue: 243.0 / 255.0,
+        static let signUpButtonTextColor: UIColor = UIColor(red: 99/255,
+                                                            green: 217/255,
+                                                            blue: 243/255,
                                                             alpha: 1)
+        static let topImageName = "authTopImage"
+        static let welcomeBackTitle = "Welcome back to DO IT"
+        static let titleLabelText = "Have an other productive day !"
+        static let signInButtonTitle = "Sign In"
+        static let signUpButtonTitle = "Sign Up"
+        static let messageLabelText = "Don't have an account?"
+        static let leadingAnchor: CGFloat = 16
+        static let trailingAnchor: CGFloat = -16
+        static let heightAnchor: CGFloat = 42
+        static let topAnchor: CGFloat = 16
     }
     
     private lazy var topImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "authTopImage")
+        imageView.image = UIImage(named: Constants.topImageName)
         return imageView
     }()
     
     private lazy var welcomeBackLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Welcome back to DO IT"
-        label.font = .systemFont(ofSize: 25, weight: .bold)
+        label.text = Constants.welcomeBackTitle
+        label.font = .systemFont(ofSize: 25,
+                                 weight: .bold)
         label.textColor = .white
         label.textAlignment = .left
         return label
@@ -42,7 +53,7 @@ final class SignInView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
-        label.text = "Have an other productive day !"
+        label.text = Constants.titleLabelText
         label.font = .systemFont(ofSize: 18)
         label.textColor = .white
         return label
@@ -57,15 +68,20 @@ final class SignInView: UIView {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        button.setTitle("Sign in", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
+        button.setTitle(Constants.signInButtonTitle,
+                        for: .normal)
+        button.setTitleColor(.white,
+                             for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18,
+                                              weight: .bold)
         
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.clear.cgColor
         button.layer.cornerRadius = 10
         
-        button.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(signInButtonTapped),
+                         for: .touchUpInside)
         
         button.backgroundColor = Constants.signInButtonColor
         
@@ -75,19 +91,24 @@ final class SignInView: UIView {
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14, weight: .semibold)
+        label.font = .systemFont(ofSize: 14,
+                                 weight: .semibold)
         label.textColor = .white
         label.textAlignment = .center
-        label.text = "Don't have an account?"
+        label.text = Constants.messageLabelText
         return label
     }()
     
     private lazy var signUpMessageButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Sign up", for: .normal)
-        button.setTitleColor(Constants.signUpButtonTextColor, for: .normal)
-        button.addTarget(self, action: #selector(signUpHandler), for: .touchUpInside)
+        button.setTitle(Constants.signUpButtonTitle,
+                        for: .normal)
+        button.setTitleColor(Constants.signUpButtonTextColor,
+                             for: .normal)
+        button.addTarget(self,
+                         action: #selector(signUpHandler),
+                         for: .touchUpInside)
         return button
     }()
     
@@ -134,8 +155,10 @@ private extension SignInView {
         let imageView = UIImageView(image: UIImage(named: leftImage))
         imageView.contentMode = .scaleAspectFit
         
-        let imageContainer = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
-        imageView.frame = CGRect(x: 10, y: 0, width: 20, height: 20)
+        let imageContainer = UIView(frame: CGRect(x: 0, y: 0,
+                                                  width: 40, height: 20))
+        imageView.frame = CGRect(x: 10, y: 0,
+                                 width: 20, height: 20)
         imageContainer.addSubview(imageView)
         
         textField.leftView = imageContainer
@@ -172,47 +195,47 @@ private extension SignInView {
     func setupConstraints() {
         NSLayoutConstraint.activate([
             topImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            topImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
+            topImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: Constants.topAnchor),
             topImageView.heightAnchor.constraint(equalToConstant: 83),
             topImageView.widthAnchor.constraint(equalToConstant: 83)
         ])
         
         NSLayoutConstraint.activate([
-            welcomeBackLabel.topAnchor.constraint(equalTo: topImageView.bottomAnchor, constant: 16),
-            welcomeBackLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            welcomeBackLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            welcomeBackLabel.topAnchor.constraint(equalTo: topImageView.bottomAnchor, constant: Constants.topAnchor),
+            welcomeBackLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            welcomeBackLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor),
         ])
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: welcomeBackLabel.bottomAnchor, constant: 6),
-            titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor)
         ])
         
         NSLayoutConstraint.activate([
             emailInputTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 26),
-            emailInputTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            emailInputTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            emailInputTextField.heightAnchor.constraint(equalToConstant: 42)
+            emailInputTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            emailInputTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor),
+            emailInputTextField.heightAnchor.constraint(equalToConstant: Constants.heightAnchor)
         ])
         
         NSLayoutConstraint.activate([
             passwordInputTextField.topAnchor.constraint(equalTo: emailInputTextField.bottomAnchor, constant: 36),
-            passwordInputTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            passwordInputTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            passwordInputTextField.heightAnchor.constraint(equalToConstant: 42)
+            passwordInputTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            passwordInputTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor),
+            passwordInputTextField.heightAnchor.constraint(equalToConstant: Constants.heightAnchor)
         ])
         
         NSLayoutConstraint.activate([
             signInButton.topAnchor.constraint(equalTo: passwordInputTextField.bottomAnchor, constant: 36),
-            signInButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            signInButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            signInButton.heightAnchor.constraint(equalToConstant: 42)
+            signInButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.leadingAnchor),
+            signInButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.trailingAnchor),
+            signInButton.heightAnchor.constraint(equalToConstant: Constants.heightAnchor)
         ])
         
         NSLayoutConstraint.activate([
             messageLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -20),
-            messageLabel.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 16),
+            messageLabel.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: Constants.topAnchor),
             messageLabel.trailingAnchor.constraint(equalTo: signUpMessageButton.leadingAnchor, constant: -4)
         ])
         

@@ -39,7 +39,7 @@ final class NotesListViewController: UIViewController {
 private extension NotesListViewController {
     
     func setupBindings() {
-        viewModel.$unCompletedNotes
+        viewModel.$fetchedUserNotes
             .sink { [weak self] notes in
                 guard let self = self else { return }
                 self.notesListView.setNoteModel(notes)

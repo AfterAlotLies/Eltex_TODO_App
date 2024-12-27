@@ -8,6 +8,7 @@
 import UIKit
 
 extension UIView {
+    /// Method setting gradient background for UIView
     func applyGradientBackground(colors: [UIColor], startPoint: CGPoint = CGPoint(x: 0.5, y: 0.0), endPoint: CGPoint = CGPoint(x: 0.5, y: 1.0)) {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = colors.map { $0.cgColor }
@@ -21,4 +22,5 @@ extension UIView {
         
         self.layer.insertSublayer(gradientLayer, at: 0)
     }
+    
 }

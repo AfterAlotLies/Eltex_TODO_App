@@ -10,7 +10,7 @@ import Foundation
 
 final class NoteListViewModel {
     
-    @Published private(set) var unCompletedNotes: [Note] = []
+    @Published private(set) var fetchedUserNotes: [Note] = []
     
     private let notesRepository: NotesRepository
     private var subscriptions: Set<AnyCancellable> = []
@@ -93,7 +93,6 @@ private extension NoteListViewModel {
             return leftDate < rightDate
         }
         
-        unCompletedNotes = sortedNotes.map { $0.0 }
+        fetchedUserNotes = sortedNotes.map { $0.0 }
     }
-
 }

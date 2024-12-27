@@ -8,6 +8,11 @@
 import Combine
 import CoreData
 
+enum UserNotesServiceErrors: Error {
+    case userNotFound
+    case failedToSave
+}
+
 final class UserNotesService {
     private let entityName: String = "UserNotesEntity"
     
@@ -26,111 +31,137 @@ final class UserNotesService {
     }
 
     // MARK: - Add New Note for User
-    func addNewNoteForUser(by userId: UUID, noteData: Note) {
-        let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        userFetchRequest.predicate = NSPredicate(format: "id == %@", userId as CVarArg)
-        
-        do {
-            if let user = try context.fetch(userFetchRequest).first {
-                let newNote = UserNotesEntity(context: context)
-                newNote.id = noteData.noteId
-                newNote.task = noteData.noteName
-                newNote.descriptionNote = noteData.noteDescription
-                newNote.date = noteData.noteDate
-                newNote.time = noteData.noteTime
-                newNote.isCompleted = noteData.isCompleted
-                newNote.ofUserEntity = user
-                
-                user.addToOfNotesEntity(newNote)
-                
-                try context.save()
-            } else {
-                print("User not found.")
+    func addNewNoteForUser(by userId: UUID, noteData: Note) -> AnyPublisher<Bool, Never> {
+        Future { promise in
+            let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+            userFetchRequest.predicate = NSPredicate(format: "id == %@", userId as CVarArg)
+            
+            do {
+                if let user = try self.context.fetch(userFetchRequest).first {
+                    let newNote = UserNotesEntity(context: self.context)
+                    newNote.id = noteData.noteId
+                    newNote.task = noteData.noteName
+                    newNote.descriptionNote = noteData.noteDescription
+                    newNote.date = noteData.noteDate
+                    newNote.time = noteData.noteTime
+                    newNote.isCompleted = noteData.isCompleted
+                    newNote.ofUserEntity = user
+                    
+                    user.addToOfNotesEntity(newNote)
+                    
+                    try self.context.save()
+                    promise(.success(true))
+                } else {
+                    promise(.success(false))
+                }
+            } catch {
+                print("Failed to add note: \(error.localizedDescription)")
+                promise(.success(false))
             }
-        } catch {
-            print("Failed to add note: \(error.localizedDescription)")
         }
+        .eraseToAnyPublisher()
     }
-
+    
     // MARK: - Get All Notes for User by ID
-    func getAllNotesForUser(by userId: UUID) -> [UserNotesEntity] {
+    func getAllNotesForUser(by userId: UUID) -> AnyPublisher<[UserNotesEntity], Never> {
         let fetchRequest: NSFetchRequest<UserNotesEntity> = UserNotesEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "ofUserEntity.id == %@", userId as CVarArg)
         
-        do {
-            let notes = try context.fetch(fetchRequest)
-            return notes
-        } catch {
-            print("Failed to fetch notes: \(error.localizedDescription)")
-            return []
+        return Future { promise in
+            do {
+                let notes = try self.context.fetch(fetchRequest)
+                promise(.success(notes))
+            } catch {
+                promise(.success([]))
+            }
         }
+        .eraseToAnyPublisher()
     }
     
-    func deleteNote(for userId: UUID, by noteId: UUID) {
-        let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        userFetchRequest.predicate = NSPredicate(format: "id == %@", userId as CVarArg)
-        
-        do {
-            let users = try context.fetch(userFetchRequest)
-            guard let user = users.first else {
-                print("Пользователь не найден.")
-                return
+    func deleteNote(for userId: UUID, by noteId: UUID) -> AnyPublisher<Bool, Never> {
+        Future { promise in
+            let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+            userFetchRequest.predicate = NSPredicate(format: "id == %@", userId as CVarArg)
+            do {
+                let users = try self.context.fetch(userFetchRequest)
+                guard let user = users.first else {
+                    promise(.success(false))
+                    return
+                }
+                
+                if let noteToDelete = user.ofNotesEntity?.first(where: { ($0 as? UserNotesEntity)?.id == noteId }) as? UserNotesEntity {
+                    self.context.delete(noteToDelete)
+                    try self.context.save()
+                    print("Заметка успешно удалена.")
+                    promise(.success(true))
+                } else {
+                    print("Заметка не найдена.")
+                    promise(.success(false))
+                }
+            } catch {
+                print("Ошибка при удалении заметки: \(error.localizedDescription)")
+                promise(.success(false))
             }
+        }
+        .eraseToAnyPublisher()
+        
+    }
+    
+    func markNoteAsCompleted(for userId: UUID, by noteId: UUID) -> AnyPublisher<Bool, Never> {
+        Future { promise in
+            let fetchRequest: NSFetchRequest<UserNotesEntity> = UserNotesEntity.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "ofUserEntity.id == %@ AND id == %@", userId as CVarArg, noteId as CVarArg)
             
-            if let noteToDelete = user.ofNotesEntity?.first(where: { ($0 as? UserNotesEntity)?.id == noteId }) as? UserNotesEntity {
-                context.delete(noteToDelete)
-                try context.save()
-                print("Заметка успешно удалена.")
-            } else {
-                print("Заметка не найдена.")
+            do {
+                let results = try self.context.fetch(fetchRequest)
+                if let noteToUpdate = results.first {
+                    noteToUpdate.isCompleted = true
+                    try self.context.save()
+                    print("Заметка обновлена как выполненная.")
+                    promise(.success(true))
+                } else {
+                    print("Заметка не найдена.")
+                    promise(.success(false))
+                }
+            } catch {
+                print("Ошибка при обновлении заметки: \(error.localizedDescription)")
+                promise(.success(false))
             }
-        } catch {
-            print("Ошибка при удалении заметки: \(error.localizedDescription)")
         }
-    }
-    
-    func markNoteAsCompleted(for userId: UUID, by noteId: UUID) {
-        let fetchRequest: NSFetchRequest<UserNotesEntity> = UserNotesEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "ofUserEntity.id == %@ AND id == %@", userId as CVarArg, noteId as CVarArg)
-        
-        do {
-            let results = try context.fetch(fetchRequest)
-            if let noteToUpdate = results.first {
-                noteToUpdate.isCompleted = true
-                try context.save()
-                print("Заметка обновлена как выполненная.")
-            } else {
-                print("Заметка не найдена.")
-            }
-        } catch {
-            print("Ошибка при обновлении заметки: \(error.localizedDescription)")
-        }
+        .eraseToAnyPublisher()
     }
 
-    func updateNoteForUser(by userId: UUID, noteId: UUID, updatedNoteData: Note) {
-        let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        userFetchRequest.predicate = NSPredicate(format: "id == %@", userId as CVarArg)
-        
-        do {
-            if let user = try context.fetch(userFetchRequest).first {
-                let notesFetchRequest: NSFetchRequest<UserNotesEntity> = UserNotesEntity.fetchRequest()
-                notesFetchRequest.predicate = NSPredicate(format: "id == %@ AND ofUserEntity == %@", noteId as CVarArg, user)
-                
-                if let noteToUpdate = try context.fetch(notesFetchRequest).first {
-                    noteToUpdate.task = updatedNoteData.noteName
-                    noteToUpdate.descriptionNote = updatedNoteData.noteDescription
-                    noteToUpdate.date = updatedNoteData.noteDate
-                    noteToUpdate.time = updatedNoteData.noteTime
-                    noteToUpdate.isCompleted = updatedNoteData.isCompleted
-                    try context.save()
+    func updateNoteForUser(by userId: UUID, noteId: UUID, updatedNoteData: Note) -> AnyPublisher<Bool, Never> {
+        Future { promise in
+            let userFetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+            userFetchRequest.predicate = NSPredicate(format: "id == %@", userId as CVarArg)
+            
+            do {
+                if let user = try self.context.fetch(userFetchRequest).first {
+                    let notesFetchRequest: NSFetchRequest<UserNotesEntity> = UserNotesEntity.fetchRequest()
+                    notesFetchRequest.predicate = NSPredicate(format: "id == %@ AND ofUserEntity == %@", noteId as CVarArg, user)
+                    
+                    if let noteToUpdate = try self.context.fetch(notesFetchRequest).first {
+                        noteToUpdate.task = updatedNoteData.noteName
+                        noteToUpdate.descriptionNote = updatedNoteData.noteDescription
+                        noteToUpdate.date = updatedNoteData.noteDate
+                        noteToUpdate.time = updatedNoteData.noteTime
+                        noteToUpdate.isCompleted = updatedNoteData.isCompleted
+                        try self.context.save()
+                        promise(.success(true))
+                    } else {
+                        print("Note not found.")
+                        promise(.success(false))
+                    }
                 } else {
-                    print("Note not found.")
+                    print("User not found.")
+                    promise(.success(false))
                 }
-            } else {
-                print("User not found.")
+            } catch {
+                print("Failed to update note: \(error.localizedDescription)")
+                promise(.success(false))
             }
-        } catch {
-            print("Failed to update note: \(error.localizedDescription)")
         }
+        .eraseToAnyPublisher()
     }
 }

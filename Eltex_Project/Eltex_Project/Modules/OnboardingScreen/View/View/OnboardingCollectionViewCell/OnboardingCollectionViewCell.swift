@@ -24,7 +24,8 @@ final class OnboardingCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 20,
+                                       weight: .bold)
         return label
     }()
     
@@ -68,12 +69,11 @@ private extension OnboardingCollectionViewCell {
             previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 26),
             previewImageView.heightAnchor.constraint(equalToConstant: 250),
         ])
-
+        
         NSLayoutConstraint.activate([
             previewTextLabel.topAnchor.constraint(equalTo: previewImageView.bottomAnchor, constant: 16),
             previewTextLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             previewTextLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
         ])
-        
     }
 }

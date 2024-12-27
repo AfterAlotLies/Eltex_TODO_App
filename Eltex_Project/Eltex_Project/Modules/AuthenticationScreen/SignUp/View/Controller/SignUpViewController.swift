@@ -11,8 +11,14 @@ import Combine
 // MARK: - SignUpViewController
 final class SignUpViewController: UIViewController {
     
+    private enum Constants {
+        static let alertErrorTitle = "Error"
+        static let alertOkTitle = "OK"
+    }
+    
     private lazy var signUpView: SignUpView = {
-        let view = SignUpView(frame: .zero, viewModel: viewModel)
+        let view = SignUpView(frame: .zero,
+                              viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -46,17 +52,36 @@ private extension SignUpViewController {
             .sink { [weak self] errorMessage in
                 guard let self = self else { return }
                 if errorMessage != "" {
-                    self.showAlert(title: "Error", message: errorMessage)
+                    self.showAlert(title: Constants.alertErrorTitle,
+                                   message: errorMessage)
                 }
             }
             .store(in: &subscriptions)
     }
     
     func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
+        let okAction = UIAlertAction(title: Constants.alertOkTitle,
+                                     style: .default)
         alert.addAction(okAction)
         present(alert, animated: true)
+    }
+}
+
+// MARK: - Private methods
+private extension SignUpViewController {
+    
+    func setTapRecognizer() {
+        let tap = UITapGestureRecognizer(target: self,
+                                         action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc
+    func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
@@ -66,15 +91,9 @@ private extension SignUpViewController {
     func setupController() {
         view.addSubview(signUpView)
         view.backgroundColor = .clear
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tap)
         
+        setTapRecognizer()
         setupConstraints()
-    }
-    
-    @objc
-    func dismissKeyboard() {
-        view.endEditing(true)
     }
     
     func setupConstraints() {

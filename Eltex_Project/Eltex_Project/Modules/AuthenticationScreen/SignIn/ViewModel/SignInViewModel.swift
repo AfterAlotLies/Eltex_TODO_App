@@ -33,7 +33,7 @@ final class SignInViewModel {
                 guard let self = self else { return }
                 switch result {
                 case .finished:
-                    print()
+                    break
                 case .failure(let error):
                     if let error = error as? UserAuthorizationResult {
                         switch error {

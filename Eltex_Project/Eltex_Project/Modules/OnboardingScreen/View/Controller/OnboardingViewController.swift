@@ -12,7 +12,8 @@ import Combine
 final class OnboardingViewController: UIViewController {
     
     private lazy var onboardingView: OnboardingView = {
-        let view = OnboardingView(frame: .zero, viewModel: viewModel)
+        let view = OnboardingView(frame: .zero,
+                                  viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -35,10 +36,6 @@ final class OnboardingViewController: UIViewController {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    deinit {
-        print("deinit onboarding controller")
     }
 }
 

@@ -7,12 +7,19 @@
 
 import Foundation
 
+// MARK: - UserCacheService
 final class UserCacheService {
+    
+    private enum Constants {
+        static let fileName = "authenticatedUser.json"
+        static let cacheKey: NSString = "authenticatedUser"
+    }
+    
     static let shared = UserCacheService()
     
     private let cache = NSCache<NSString, UserInfoWrapper>()
     private let fileManager = FileManager.default
-    private let fileName = "authenticatedUser.json"
+    private let fileName = Constants.fileName
     
     private lazy var filePath: URL = {
         fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(fileName)
@@ -24,24 +31,25 @@ final class UserCacheService {
     
     func saveUser(_ user: UserInfo) {
         let wrapper = UserInfoWrapper(userInfo: user)
-        cache.setObject(wrapper, forKey: "authenticatedUser")
+        cache.setObject(wrapper, forKey: Constants.cacheKey)
         saveUserToDisk(user)
     }
     
     func getUser() -> UserInfo? {
-        if let wrapper = cache.object(forKey: "authenticatedUser") {
+        if let wrapper = cache.object(forKey: Constants.cacheKey) {
             return wrapper.userInfo
         }
         return nil
     }
     
     func clearUser() {
-        cache.removeObject(forKey: "authenticatedUser")
+        cache.removeObject(forKey: Constants.cacheKey)
         try? fileManager.removeItem(at: filePath)
     }
     
 }
 
+// MARK: - Private methods
 private extension UserCacheService {
     
     func loadUserFromDisk() {
@@ -51,7 +59,7 @@ private extension UserCacheService {
             let data = try Data(contentsOf: filePath)
             let user = try JSONDecoder().decode(UserInfo.self, from: data)
             let wrapper = UserInfoWrapper(userInfo: user)
-            cache.setObject(wrapper, forKey: "authenticatedUser")
+            cache.setObject(wrapper, forKey: Constants.cacheKey)
         } catch {
             fatalError("Failed to load user from disk: \(error)")
         }

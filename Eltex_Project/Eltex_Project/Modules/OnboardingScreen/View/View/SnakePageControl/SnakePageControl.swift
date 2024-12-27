@@ -25,7 +25,6 @@ class SnakePageControl: UIView {
         return Int(round(progress))
     }
     
-    
     // MARK: - Appearance
     var activeTint: UIColor = .white {
         didSet {
@@ -61,7 +60,8 @@ class SnakePageControl: UIView {
     fileprivate lazy var activeLayer: CALayer = { [unowned self] in
         let layer = CALayer()
         layer.frame = CGRect(origin: CGPoint.zero,
-                             size: CGSize(width: self.indicatorDiameter, height: self.indicatorDiameter))
+                             size: CGSize(width: self.indicatorDiameter,
+                                          height: self.indicatorDiameter))
         layer.backgroundColor = self.activeTint.cgColor
         layer.cornerRadius = self.indicatorRadius
         return layer

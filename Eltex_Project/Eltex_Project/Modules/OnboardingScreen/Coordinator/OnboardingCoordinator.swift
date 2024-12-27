@@ -33,11 +33,6 @@ final class OnboardingCoordinator: Coordinator {
     init(navigationController: UINavigationController, firstLaunchService: FirstLaunchService) {
         self.navigationController = navigationController
         self.firstLaunchService = firstLaunchService
-        print("inited OnboardingCoordinator")
-    }
-    
-    deinit {
-        print("deinit OnboardingCoordinator")
     }
     
 }

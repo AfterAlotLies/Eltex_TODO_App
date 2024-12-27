@@ -13,6 +13,7 @@ final class SettingsViewController: UIViewController {
     private lazy var settingsView: SettingsView = {
         let view = SettingsView(frame: .zero, viewModel: viewModel)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.delegate = self
         return view
     }()
     
@@ -33,6 +34,28 @@ final class SettingsViewController: UIViewController {
         super.viewDidLoad()
         setupController()
         setupBindings()
+    }
+}
+
+extension SettingsViewController: SettingsViewDelegate {
+    
+    func logoutButtonTapped() {
+        showAlert(message: "Are you sure wanna quit?")
+    }
+}
+
+private extension SettingsViewController {
+    
+    func showAlert(message: String) {
+        let alert = UIAlertController(title: "Wait", message: message, preferredStyle: .alert)
+        let yesAction = UIAlertAction(title: "Yes, i'm sure", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            self.viewModel.logOut()
+        }
+        let noAction = UIAlertAction(title: "No, i'm not done", style: .cancel, handler: nil)
+        alert.addAction(yesAction)
+        alert.addAction(noAction)
+        present(alert, animated: true)
     }
 }
 

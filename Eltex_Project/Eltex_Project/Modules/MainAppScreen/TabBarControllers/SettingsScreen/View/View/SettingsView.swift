@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol SettingsViewDelegate: AnyObject {
+    func logoutButtonTapped()
+}
+
 final class SettingsView: UIView {
     
     private lazy var settingsTableView: UITableView = {
@@ -45,6 +49,8 @@ final class SettingsView: UIView {
     
     private var settingsModel: [Settings]?
     private let viewModel: SettingsViewModel
+    
+    weak var delegate: SettingsViewDelegate?
     
     init(frame: CGRect, viewModel: SettingsViewModel) {
         self.viewModel = viewModel
@@ -89,7 +95,7 @@ private extension SettingsView {
     
     @objc
     func logOutAction() {
-        viewModel.logOut()
+        delegate?.logoutButtonTapped()
     }
     
     func setupView() {

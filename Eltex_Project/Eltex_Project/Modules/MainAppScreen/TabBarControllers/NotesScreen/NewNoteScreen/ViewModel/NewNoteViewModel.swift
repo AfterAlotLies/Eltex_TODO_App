@@ -33,7 +33,7 @@ final class NewNoteViewModel {
         }
         if checkCorrectDate(note) {
             notesRepository.addNewNoteForUser(newNote: note)
-            noteCreatedPublisher.send()
+            closeScreen()
         } else {
             return
         }

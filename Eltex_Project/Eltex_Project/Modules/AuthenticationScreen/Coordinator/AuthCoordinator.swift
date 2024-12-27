@@ -27,6 +27,7 @@ final class AuthCoordinator: Coordinator {
     
     var type: CoordinatorType { .authentication }
     
+    // MARK: - Start
     func start() {
         showSignIn()
     }
@@ -57,7 +58,6 @@ extension AuthCoordinator: AuthCoordinatorProtocol {
                 self.coordinatorDidFinished.send(userInfo)
             }
             .store(in: &subscriptions)
-        
         
         let viewController = SignInViewController(viewModel: viewModel)
         UIView.transition(with: navigationController.view, duration: 0.3, options: .transitionCrossDissolve, animations: {

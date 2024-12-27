@@ -15,6 +15,7 @@ final class NotesRepository {
     
     private(set) var notesPublisher = CurrentValueSubject<[Note], Never>([])
     private(set) var newNotePublisher = CurrentValueSubject<Note?, Never>(nil)
+    private var subscriptions: Set<AnyCancellable> = []
     
     init(userInfo: UserInfo) {
         self.userInfo = userInfo
@@ -23,49 +24,73 @@ final class NotesRepository {
     
     func getAllNoteForUser() {
         guard let userId = userInfo.id else { return }
-        let userNotes = userNotesService.getAllNotesForUser(by: userId)
         
-        let notes: [Note] = userNotes.map { userData in
-            Note(noteId: userData.id,
-                 noteName: userData.task,
-                 noteDate: userData.date,
-                 noteTime: userData.time,
-                 noteDescription: userData.descriptionNote,
-                 isCompleted: userData.isCompleted)
-        }
-        
-        notesPublisher.send(notes)
+        userNotesService.getAllNotesForUser(by: userId)
+            .map { userNotes in
+                userNotes.map { userData in
+                    Note(noteId: userData.id,
+                         noteName: userData.task,
+                         noteDate: userData.date,
+                         noteTime: userData.time,
+                         noteDescription: userData.descriptionNote,
+                         isCompleted: userData.isCompleted)
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] notes in
+                self?.notesPublisher.send(notes)
+            }
+            .store(in: &subscriptions)
     }
     
     func addNewNoteForUser(newNote: Note) {
         guard let userId = userInfo.id else { return }
         
         userNotesService.addNewNoteForUser(by: userId, noteData: newNote)
-        
-        newNotePublisher.value = newNote
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] success in
+                if success {
+                    self?.newNotePublisher.send(newNote)
+                }
+            })
+            .store(in: &subscriptions)
     }
     
     func deleteNoteForUser(noteId: UUID) {
         guard let userId = userInfo.id else { return }
         
         userNotesService.deleteNote(for: userId, by: noteId)
-        
-        getAllNoteForUser()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] success in
+                if success {
+                    self?.getAllNoteForUser()
+                }
+            }
+            .store(in: &subscriptions)
     }
     
     func markNoteCompleted(noteId: UUID) {
         guard let userId = userInfo.id else { return }
         
         userNotesService.markNoteAsCompleted(for: userId, by: noteId)
-        
-        getAllNoteForUser()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] success in
+                if success {
+                    self?.getAllNoteForUser()
+                }
+            }
+            .store(in: &subscriptions)
     }
     
     func updateNoteForUser(noteData: Note) {
         guard let userId = userInfo.id else { return }
-        print(noteData.noteId)
         userNotesService.updateNoteForUser(by: userId, noteId: noteData.noteId, updatedNoteData: noteData)
-        
-        getAllNoteForUser()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] success in
+                if success {
+                    self?.getAllNoteForUser()
+                }
+            }
+            .store(in: &subscriptions)
     }
 }

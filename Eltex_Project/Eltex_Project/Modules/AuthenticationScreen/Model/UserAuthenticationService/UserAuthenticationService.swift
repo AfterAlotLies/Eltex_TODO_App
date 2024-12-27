@@ -21,7 +21,11 @@ enum UserAuthorizationResult: Error {
 // MARK: - UserAuthenticationService class
 final class UserAuthenticationService {
     
-    private let entityName: String = "UserEntity"
+    private enum Constants {
+        static let entityName = "UserEntity"
+    }
+    
+    private let entityName: String = Constants.entityName
     
     private let persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Eltex_Project")
@@ -48,7 +52,6 @@ extension UserAuthenticationService: RegistrationProtocol {
                 let existingUsers = try context.fetch(fetchRequest)
                 
                 if let _ = existingUsers.first {
-                    print("User with this email already exists")
                     promise(.failure(UserRegistrationResult.userAlreadyExists))
                     return
                 }
@@ -62,17 +65,14 @@ extension UserAuthenticationService: RegistrationProtocol {
                 if context.hasChanges {
                     do {
                         try context.save()
-                        print("User saved successfully")
                         promise(.success(UserInfo(name: userEntity.name,
                                                   email: userEntity.email,
                                                   id: userEntity.id)))
                     } catch {
-                        print("Failed to save user: \(error)")
                         promise(.failure(error))
                     }
                 }
             } catch {
-                print("Failed to check for existing user: \(error)")
                 promise(.failure(error))
             }
         }
