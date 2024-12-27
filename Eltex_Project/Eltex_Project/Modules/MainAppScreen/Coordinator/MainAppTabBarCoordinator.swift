@@ -88,7 +88,6 @@ extension MainAppTabBarCoordinator: MainAppTabBarCoordinatorProtocol {
     
     func setupScreenCoordinator(_ page: TabBarPages) -> UINavigationController {
         let childNavigationController = UINavigationController()
-        childNavigationController.isNavigationBarHidden = true
         childNavigationController.view.applyGradientBackground(colors: [AppBackgroundColors.topColor,
                                                                         AppBackgroundColors.bottomColor])
         

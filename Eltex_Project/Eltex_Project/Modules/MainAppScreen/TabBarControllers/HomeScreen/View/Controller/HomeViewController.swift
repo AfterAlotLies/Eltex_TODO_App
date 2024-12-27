@@ -66,7 +66,7 @@ private extension HomeViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            homeView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            homeView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             homeView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             homeView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             homeView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)

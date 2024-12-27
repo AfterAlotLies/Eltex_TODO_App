@@ -80,7 +80,7 @@ extension DetailNoteCoordinator: DetailNoteCoordinatorProtocol {
         
         let detailVC = DetailNoteViewController(choosenNote: note, viewModel: viewModel)
         
-        navigationController.setNavigationBarHidden(false, animated: true)
+        navigationController.setNavigationBarHidden(false, animated: false)
         setupNavigationBar(for: detailVC)
         navigationController.pushViewController(detailVC, animated: true)
     }
@@ -143,7 +143,6 @@ private extension DetailNoteCoordinator {
     @objc
     func backButtonTapped() {
         navigationController.popViewController(animated: true)
-        navigationController.setNavigationBarHidden(true, animated: false)
         delegate?.detailNoteCoordinatorDidFinish(self)
     }
 }
