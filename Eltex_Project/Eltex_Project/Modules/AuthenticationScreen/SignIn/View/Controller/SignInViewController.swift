@@ -67,8 +67,15 @@ private extension SignInViewController {
     func setupController() {
         view.addSubview(signInView)
         view.backgroundColor = .clear
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
         
         setupConstraints()
+    }
+    
+    @objc
+    func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     func setupConstraints() {
